@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">HelpAtHome</string>
+    <string-array name="user_types">
+        <item>NGO</item>
+        <item>Law enforcement</item>
+        <item>Civilian</item>
+        <item>Admin</item>
+    </string-array>
+
+</resources>
