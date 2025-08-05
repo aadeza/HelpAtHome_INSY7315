@@ -67,7 +67,8 @@ class SignUp : AppCompatActivity() {
                             "lastName" to lName,
                             "dob" to birthDate,
                             "userType" to type,
-                            "email" to emailText
+                            "email" to emailText,
+                            "sosActive" to false // Set SOS to off on sign-up
                         )
 
                         FirebaseDatabase.getInstance().getReference("Users")
