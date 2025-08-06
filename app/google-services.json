@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "703179413514",
+    "project_id": "helpathome-49074",
+    "storage_bucket": "helpathome-49074.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703179413514:android:7e07f1b5d5951f49a927f3",
+        "android_client_info": {
+          "package_name": "com.example.helpathome"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7qqaX5mx6Ew5FH-sbTxY4hjkbH_RwYA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
