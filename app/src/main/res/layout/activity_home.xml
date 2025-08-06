@@ -41,7 +41,7 @@
             android:textStyle="bold"
             android:layout_marginTop="8dp" />
 
-        <!-- Profile Button and Username container -->
+        <!-- Profile Button and Username -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:src="@drawable/profileiconn" />
         </LinearLayout>
 
-        <!-- Location Section -->
+        <!-- Location -->
         <LinearLayout
             android:id="@+id/locationSection"
             android:layout_width="match_parent"
@@ -98,7 +98,7 @@
         <LinearLayout
             android:id="@+id/notificationsSection"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -117,8 +117,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNotifications"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
+                android:layout_height="200dp"
+                android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_notification" />
         </LinearLayout>
 
@@ -126,7 +126,7 @@
         <LinearLayout
             android:id="@+id/ngoSection"
             android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -145,8 +145,8 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNgos"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="true"
+                android:layout_height="180dp"
+                android:nestedScrollingEnabled="false"
                 android:orientation="horizontal"
                 tools:listitem="@layout/item_ngo" />
         </LinearLayout>
@@ -175,11 +175,14 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerResources"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="180dp"
+                android:nestedScrollingEnabled="false"
                 android:orientation="horizontal"
                 android:overScrollMode="never"
                 tools:listitem="@layout/item_resource" />
         </LinearLayout>
+
+        <!-- SOS Button -->
         <Button
             android:id="@+id/btnSos"
             android:layout_width="match_parent"
@@ -190,9 +193,7 @@
             android:textStyle="bold"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:layout_gravity="center_horizontal"/>
-
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 </ScrollView>
-
