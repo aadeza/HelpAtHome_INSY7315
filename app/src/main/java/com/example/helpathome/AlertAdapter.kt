@@ -12,8 +12,15 @@ import com.example.helpathome.models.alerts
 class AlertAdapter(
     private val alertList: List<alerts>,
     private val onResolveClick: (alerts) -> Unit,
+    private val onDeleteClick: (alerts) -> Unit
+) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
 
-    ) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
+    class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val textUserId: TextView = itemView.findViewById(R.id.textUserId)
+        val textLocation: TextView = itemView.findViewById(R.id.textLocation)
+        val buttonResolve: Button = itemView.findViewById(R.id.buttonResolve)
+        val buttonDelete: Button = itemView.findViewById(R.id.buttonDelete)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -21,31 +28,22 @@ class AlertAdapter(
         return AlertViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
-        val alert = alertList[position]
-        holder.bind(alert)
-    }
-
     override fun getItemCount(): Int = alertList.size
 
-    inner class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val userId:TextView = itemView.findViewById(R.id.textUserId)
-        private val locationText: TextView = itemView.findViewById(R.id.textLocation)
-        private val timestampText: TextView = itemView.findViewById(R.id.textTimestamp)
-        private val statusText: TextView = itemView.findViewById(R.id.textStatus)
-        private val resolveButton: Button = itemView.findViewById(R.id.btnResolve)
+    override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
+        val alert = alertList[position]
+        holder.textUserId.text = "User ID: ${alert.userId}"
+        holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?: "Unknown"}"
 
-        fun bind(alert: alerts) {
+        // Show resolve button only for active alerts
+        holder.buttonResolve.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
 
-            userId.text = "UserId: ${alert.userId}"
-            locationText.text = "Location: ${alert.location}"
-            timestampText.text = "Time: ${alert.timestamp}"
-            statusText.text = if (alert.sosActive) "Status: ACTIVE" else "Status: RESOLVED"
+        holder.buttonResolve.setOnClickListener {
+            onResolveClick(alert)
+        }
 
-            resolveButton.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
-            resolveButton.setOnClickListener { onResolveClick(alert) }
-
-
+        holder.buttonDelete.setOnClickListener {
+            onDeleteClick(alert)
         }
     }
 }
