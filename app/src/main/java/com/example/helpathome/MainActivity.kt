@@ -8,7 +8,6 @@ import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 
 class MainActivity : ComponentActivity() {
 
@@ -21,14 +20,12 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.activity_main)
 
         auth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance().getReference("Users")
 
         val emailField = findViewById<EditText>(R.id.editLoginEmailAddress)
         val passwordField = findViewById<EditText>(R.id.editLoginPassword)
         val loginButton = findViewById<Button>(R.id.Loginbutton)
         val signUpText = findViewById<TextView>(R.id.ToSignUptextView)
 
-        // Underline "Sign Up" text
         signUpText.paintFlags = signUpText.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         signUpText.setOnClickListener {
             startActivity(Intent(this, SignUp::class.java))
@@ -38,7 +35,7 @@ class MainActivity : ComponentActivity() {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString()
 
-            // Input validation
+            // Validate input
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 emailField.error = "Enter a valid email"
                 return@setOnClickListener
@@ -49,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 return@setOnClickListener
             }
 
-            // Sign in with Firebase Auth
+            // Attempt login
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -124,8 +121,14 @@ class MainActivity : ComponentActivity() {
                     } else {
 
                         Toast.makeText(this@MainActivity, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, NGOModel::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
     }
 }
+
