@@ -76,18 +76,21 @@ class Home : AppCompatActivity() {
 
         // Load user's name
         if (currentUserId != null) {
-            database.child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
-                    val displayName = firstName.trim()
-                    txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
-                }
+            database.child(currentUserId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val firstName =
+                            snapshot.child("firstName").getValue(String::class.java) ?: ""
+                        val displayName = firstName.trim()
+                        txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
+                    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT).show()
-                    txtUserName.text = "User"
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT)
+                            .show()
+                        txtUserName.text = "User"
+                    }
+                })
         } else {
             txtUserName.text = "Guest"
         }
@@ -95,21 +98,31 @@ class Home : AppCompatActivity() {
         // Setup notifications recycler
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
-        recyclerNotifications.adapter = NotificationAdapter(listOf(
-            Notification("Report from NGO", "Shelter needed for family in Zone B", "10 min ago", "#00FF00")
-        ))
+        recyclerNotifications.adapter = NotificationAdapter(
+            listOf(
+                Notification(
+                    "Report from NGO",
+                    "Shelter needed for family in Zone B",
+                    "10 min ago",
+                    "#00FF00"
+                )
+            )
+        )
 
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
-        recyclerResources.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerResources.adapter = ResourceAdapter(listOf(
-            Resource("Mental Health Tips", R.drawable.mentalhealth),
-            Resource("Legal Aid Info", R.drawable.legalaid),
-            Resource("Emergency Contacts", R.drawable.emergencycontact),
-            Resource("Self-Defense Tips", R.drawable.selfdefense),
-            Resource("Shelter Guidelines", R.drawable.shelter),
-            Resource("Safety Planning", R.drawable.safetyplanning)
-        )) { resource ->
-            when(resource.title) {
+        recyclerResources.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerResources.adapter = ResourceAdapter(
+            listOf(
+                Resource("Mental Health Tips", R.drawable.mentalhealth),
+                Resource("Legal Aid Info", R.drawable.legalaid),
+                Resource("Emergency Contacts", R.drawable.emergencycontact),
+                Resource("Self-Defense Tips", R.drawable.selfdefense),
+                Resource("Shelter Guidelines", R.drawable.shelter),
+                Resource("Safety Planning", R.drawable.safetyplanning)
+            )
+        ) { resource ->
+            when (resource.title) {
                 "Mental Health Tips" -> showMentalHealthTipsDialog()
                 "Legal Aid Info" -> showLegalAidTipsDialog()
                 "Emergency Contacts" -> showEmergencyContactsTipsDialog()
@@ -121,7 +134,6 @@ class Home : AppCompatActivity() {
         }
 
 
-
         // Listen live for sosActive changes
         if (currentUserId != null) {
             val sosRef = database.child(currentUserId).child("sosActive")
@@ -131,15 +143,18 @@ class Home : AppCompatActivity() {
                     val active = snapshot.getValue(Boolean::class.java) ?: false
 
                     if (isSosOn && !active) {
-                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG)
+                            .show()
                     }
 
                     isSosOn = active
                     updateSosButtonUI()
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -158,10 +173,12 @@ class Home : AppCompatActivity() {
                     startSosHold()
                     true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     cancelSosHold()
                     true
                 }
+
                 else -> false
             }
         }
@@ -196,6 +213,7 @@ class Home : AppCompatActivity() {
             .setPositiveButton("Got it") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+
     private fun showLegalAidTipsDialog() {
         val tips = """
         1. Know your rights—stay informed about local laws.
@@ -290,14 +308,16 @@ class Home : AppCompatActivity() {
     private fun maybeSaveLocationToFirebase(newLocation: Location) {
         val thresholdMeters = 50 // only save if moved more than 50 meters
 
-        val shouldSave = lastSavedLocation == null || lastSavedLocation!!.distanceTo(newLocation) > thresholdMeters
+        val shouldSave =
+            lastSavedLocation == null || lastSavedLocation!!.distanceTo(newLocation) > thresholdMeters
 
         if (shouldSave) {
             lastSavedLocation = newLocation
 
             val geocoder = Geocoder(this, Locale.getDefault())
             val addressString = try {
-                val addresses = geocoder.getFromLocation(newLocation.latitude, newLocation.longitude, 1)
+                val addresses =
+                    geocoder.getFromLocation(newLocation.latitude, newLocation.longitude, 1)
                 if (!addresses.isNullOrEmpty()) {
                     val address = addresses[0]
                     val suburb = address.subLocality ?: address.locality ?: "Unknown suburb"
@@ -330,11 +350,21 @@ class Home : AppCompatActivity() {
     }
 
     private fun hasLocationPermissions(): Boolean {
-        return (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        return (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
@@ -347,11 +377,16 @@ class Home : AppCompatActivity() {
 
     @SuppressLint("MissingPermission") // Permissions are checked before calling
     private fun startLocationUpdates() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
-            .setMinUpdateIntervalMillis(3000)
-            .build()
+        val locationRequest =
+            LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(3000)
+                .build()
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     private fun updateLocationText(location: Location) {
@@ -395,14 +430,15 @@ class Home : AppCompatActivity() {
     }
 
     private fun startSosHold() {
-        colorAnimator = ValueAnimator.ofObject(ArgbEvaluator(), Color.parseColor("#880000"), Color.RED).apply {
-            duration = sosHoldTime
-            addUpdateListener { animator ->
-                val color = animator.animatedValue as Int
-                btnSos.setBackgroundColor(color)
+        colorAnimator =
+            ValueAnimator.ofObject(ArgbEvaluator(), Color.parseColor("#880000"), Color.RED).apply {
+                duration = sosHoldTime
+                addUpdateListener { animator ->
+                    val color = animator.animatedValue as Int
+                    btnSos.setBackgroundColor(color)
+                }
+                start()
             }
-            start()
-        }
 
         sosRunnable = Runnable {
             activateSos()
@@ -424,24 +460,47 @@ class Home : AppCompatActivity() {
         if (currentUserId != null) {
             database.child(currentUserId).child("sosActive").setValue(true)
                 .addOnSuccessListener {
-                    // Additional logic if needed
+                    // Value successfully written
+                    database.child(currentUserId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    val userType =
+                                        snapshot.child("userType").getValue(String::class.java)
+                                            ?: ""
+                                    val fName =
+                                        snapshot.child("firstName").getValue(String::class.java)
+                                            ?: ""
+                                    val lName =
+                                        snapshot.child("lastName").getValue(String::class.java)
+                                            ?: ""
+
+                                    ActivityLogger.log(
+                                        actorId = currentUserId,
+                                        actorType = userType,
+                                        category = "SOS Alert",
+                                        message = "User $fName $lName logged up successfully",
+                                        color = "#880808"
+                                    )
+                                }
+                                updateSosButtonUI()
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(
+                                    this@Home,
+                                    "Failed to read user data.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
                 }
                 .addOnFailureListener {
-                    Toast.makeText(this, "Failed to activate SOS.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Home, "Failed to activate SOS.", Toast.LENGTH_SHORT)
+                        .show()
                 }
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show()
         }
-
-        updateSosButtonUI()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val currentUserId = auth.currentUser?.uid
-        if (currentUserId != null && sosStatusListener != null) {
-            database.child(currentUserId).child("sosActive").removeEventListener(sosStatusListener!!)
-        }
-        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 }
-
-
