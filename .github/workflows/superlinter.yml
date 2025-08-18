@@ -13,5 +13,11 @@ jobs:
           - name: Run Super-Linter
             uses: github/super-linter@v4
             env:
+<<<<<<< HEAD
               DEFAULT_BRANCH: Admin
+=======
+
+              DEFAULT_BRANCH: Law_Enforcement
+
+>>>>>>> f0f46c71e3cec9d148bee1f35630560c8e60c928
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
