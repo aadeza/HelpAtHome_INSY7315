@@ -123,10 +123,12 @@
         </LinearLayout>
 
         <!-- NGOs Section -->
+
+        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/ngoSection"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="120dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -136,11 +138,11 @@
                 android:id="@+id/ngosTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Browse NGOs"
                 android:textColor="#000000"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNgos"
@@ -151,7 +153,6 @@
                 tools:listitem="@layout/item_ngo" />
         </LinearLayout>
 
-        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/resourcesSection"
             android:layout_width="match_parent"

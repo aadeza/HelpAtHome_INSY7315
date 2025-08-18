@@ -1,5 +1,6 @@
 package com.example.helpathome
 
+import Ngo
 import android.Manifest
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
@@ -57,7 +58,6 @@ class Home : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // Handle window insets for padding
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -69,7 +69,6 @@ class Home : AppCompatActivity() {
         txtUserName = findViewById(R.id.txtUserName)
         btnSos = findViewById(R.id.btnSos)
         txtLocation = findViewById(R.id.txtLocation)
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val currentUserId = auth.currentUser?.uid
@@ -85,6 +84,7 @@ class Home : AppCompatActivity() {
                         txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
                     }
 
+
                     override fun onCancelled(error: DatabaseError) {
                         Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT)
                             .show()
@@ -95,7 +95,7 @@ class Home : AppCompatActivity() {
             txtUserName.text = "Guest"
         }
 
-        // Setup notifications recycler
+        // Setup notifications
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
         recyclerNotifications.adapter = NotificationAdapter(
@@ -109,6 +109,7 @@ class Home : AppCompatActivity() {
             )
         )
 
+        // Setup resources
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
         recyclerResources.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -133,20 +134,39 @@ class Home : AppCompatActivity() {
             }
         }
 
+        // 🔥 Load NGOs from Firebase
+        val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
+        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        // Listen live for sosActive changes
+
+        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
+        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val ngoList = mutableListOf<Ngo>()
+                for (child in snapshot.children) {
+                    val ngo = child.getValue(Ngo::class.java)
+                    if (ngo != null) {
+                        ngoList.add(ngo)
+                    }
+                }
+                recyclerNgos.adapter = NgoAdapter(ngoList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
         if (currentUserId != null) {
             val sosRef = database.child(currentUserId).child("sosActive")
-
             sosStatusListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val active = snapshot.getValue(Boolean::class.java) ?: false
-
                     if (isSosOn && !active) {
                         Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG)
                             .show()
                     }
-
                     isSosOn = active
                     updateSosButtonUI()
 
@@ -157,11 +177,10 @@ class Home : AppCompatActivity() {
                         .show()
                 }
             }
-
             sosRef.addValueEventListener(sosStatusListener!!)
         }
 
-        // SOS button touch logic (only if SOS is off)
+        // SOS Touch Logic
         btnSos.setOnTouchListener { _, event ->
             if (isSosOn) {
                 Toast.makeText(this, "SOS is already active.", Toast.LENGTH_SHORT).show()
@@ -183,7 +202,7 @@ class Home : AppCompatActivity() {
             }
         }
 
-        // Request location permissions and start location updates
+        // Location Permission
         if (hasLocationPermissions()) {
             startLocationUpdates()
         } else {
@@ -197,6 +216,7 @@ class Home : AppCompatActivity() {
             )
         }
     }
+
 
     private fun showMentalHealthTipsDialog() {
         val tips = """
