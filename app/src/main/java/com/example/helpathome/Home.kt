@@ -458,7 +458,6 @@ class Home : AppCompatActivity() {
 
         val currentUserId = auth.currentUser?.uid
         if (currentUserId != null) {
-<<<<<<< HEAD
             database.child(currentUserId).child("sosActive").setValue(true)
                 .addOnSuccessListener {
                     // Value successfully written
@@ -504,64 +503,4 @@ class Home : AppCompatActivity() {
             Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show()
         }
     }
-=======
-            // Explicitly check permissions before accessing location
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val geocoder = Geocoder(this, Locale.getDefault())
-                        val addressString = try {
-                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                            if (!addresses.isNullOrEmpty()) {
-                                val address = addresses[0]
-                                val suburb = address.subLocality ?: address.locality ?: "Unknown suburb"
-                                val city = address.adminArea ?: "Unknown city"
-                                "$suburb, $city"
-                            } else {
-                                "Unknown location"
-                            }
-                        } catch (e: Exception) {
-                            "Unknown location"
-                        }
-
-                        val sosData = mapOf(
-                            "sosActive" to true,
-                            "latitude" to location.latitude,
-                            "longitude" to location.longitude,
-                            "address" to addressString,
-                            "triggeredAt" to System.currentTimeMillis()
-                        )
-
-                        database.child(currentUserId).updateChildren(sosData)
-                            .addOnSuccessListener {
-                                updateSosButtonUI()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this, "Failed to activate SOS.", Toast.LENGTH_SHORT).show()
-                            }
-
-                    } else {
-                        Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
-                    }
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Failed to get location.", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val currentUserId = auth.currentUser?.uid
-        if (currentUserId != null && sosStatusListener != null) {
-            database.child(currentUserId).child("sosActive").removeEventListener(sosStatusListener!!)
-        }
-        fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
->>>>>>> f0f46c71e3cec9d148bee1f35630560c8e60c928
 }

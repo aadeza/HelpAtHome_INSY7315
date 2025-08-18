@@ -34,20 +34,22 @@
         <activity
             android:name=".Home"
             android:exported="false" />
+
+        <activity
+            android:name=".AdminDashboard"
+            android:exported="false" />
         <activity
             android:name=".SignUp"
             android:exported="false" />
         <activity
-<<<<<<< HEAD
             android:name=".NGOModel"
             android:exported="false" />
         <activity
             android:name=".CallUserActivity"
             android:exported="false" />
-=======
-            android:name=".LawDashboardActivity" />
->>>>>>> f0f46c71e3cec9d148bee1f35630560c8e60c928
-
+        <activity
+            android:name=".LawDashboardActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

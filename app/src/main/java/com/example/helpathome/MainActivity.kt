@@ -8,7 +8,7 @@ import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 
 class MainActivity : ComponentActivity() {
 
@@ -21,12 +21,14 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.activity_main)
 
         auth = FirebaseAuth.getInstance()
+        database = FirebaseDatabase.getInstance().getReference("Users")
 
         val emailField = findViewById<EditText>(R.id.editLoginEmailAddress)
         val passwordField = findViewById<EditText>(R.id.editLoginPassword)
         val loginButton = findViewById<Button>(R.id.Loginbutton)
         val signUpText = findViewById<TextView>(R.id.ToSignUptextView)
 
+        // Underline "Sign Up" text
         signUpText.paintFlags = signUpText.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         signUpText.setOnClickListener {
             startActivity(Intent(this, SignUp::class.java))
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString()
 
-            // Validate input
+            // Input validation
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 emailField.error = "Enter a valid email"
                 return@setOnClickListener
@@ -47,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 return@setOnClickListener
             }
 
-            // Attempt login
+            // Sign in with Firebase Auth
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -102,6 +104,12 @@ class MainActivity : ComponentActivity() {
                                                     Home::class.java
                                                 )
                                             )
+                                            "Law enforcement" -> startActivity(
+                                                Intent(
+                                                    this@MainActivity,
+                                                    LawDashboardActivity::class.java
+                                                )
+                                            )
                                             else -> Toast.makeText(
                                                 this@MainActivity,
                                                 "User data not found in database!",
@@ -122,41 +130,6 @@ class MainActivity : ComponentActivity() {
                     } else {
 
                         Toast.makeText(this@MainActivity, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, NGOModel::class.java))
-                        finish()
-
-                        // Get current user ID
-                        val userId = auth.currentUser?.uid
-
-                        if (userId != null) {
-                            // Reference user node in Firebase DB
-                            val userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId)
-
-                            // Fetch the "role" field
-                            userRef.child("role").get().addOnSuccessListener { snapshot ->
-                                val role = snapshot.getValue(String::class.java)
-                                if (role == "law_enforcement") {
-                                    // Send to law enforcement dashboard
-                                    startActivity(Intent(this, LawDashboardActivity::class.java))
-                                } else {
-                                    // Send to regular home screen
-                                    startActivity(Intent(this, LawDashboardActivity::class.java))
-                                }
-                                finish()
-                            }.addOnFailureListener {
-                                // On failure, fallback to home
-                                startActivity(Intent(this, LawDashboardActivity::class.java))
-                                finish()
-                            }
-                        } else {
-                            // If no userId, fallback to home
-                            startActivity(Intent(this, LawDashboardActivity::class.java))
-                            finish()
-                        }
-
-                    } else {
-                        Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
