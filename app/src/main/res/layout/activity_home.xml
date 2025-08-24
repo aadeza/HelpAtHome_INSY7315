@@ -95,10 +95,14 @@
         </LinearLayout>
 
         <!-- Notifications Section -->
+
+        <!-- NGOs Section -->
+
+        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/notificationsSection"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -108,11 +112,11 @@
                 android:id="@+id/notificationsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Notifications"
                 android:textColor="#000000"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNotifications"
@@ -122,9 +126,6 @@
                 tools:listitem="@layout/item_notification" />
         </LinearLayout>
 
-        <!-- NGOs Section -->
-
-        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/ngoSection"
             android:layout_width="match_parent"

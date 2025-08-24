@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- ✅ Required for Firebase -->
+
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -17,43 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HelpAtHome"
         tools:targetApi="31">
-        <activity
-            android:name=".NgoAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".Ngo"
-            android:exported="false" />
-        <activity
-            android:name=".ResourceAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".Resource"
-            android:exported="false" />
-        <activity
-            android:name=".NotificationAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".Notification"
-            android:exported="false" />
-        <activity
-            android:name=".Home"
-            android:exported="false" />
 
-        <activity
-            android:name=".AdminDashboard"
-            android:exported="false" />
-        <activity
-            android:name=".SignUp"
-            android:exported="false" />
-        <activity
-            android:name=".NGOModel"
-            android:exported="false" />
-        <activity
-            android:name=".CallUserActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LawDashboardActivity"
-            android:exported="false" />
+        <!-- Activities -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -61,10 +27,17 @@
             android:theme="@style/Theme.HelpAtHome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <activity android:name=".Home" android:exported="false" />
+        <activity android:name=".SignUp" android:exported="false" />
+        <activity android:name=".NGOModel" android:exported="false" />
+        <activity android:name=".CallUserActivity" android:exported="false" /> <!-- confirm exact class name -->
+        <activity android:name=".LawDashboardActivity" android:exported="false" />
+        <activity android:name=".AdminDashboard" android:exported="false" />
+        <activity android:name=".HelpRequestsActivity" android:exported="false" /> <!-- Missing, added -->
+
+    </application>
 </manifest>

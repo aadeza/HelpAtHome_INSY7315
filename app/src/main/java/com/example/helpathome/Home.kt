@@ -5,6 +5,7 @@ import android.Manifest
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
@@ -41,6 +42,7 @@ class Home : AppCompatActivity() {
     private lateinit var txtUserName: TextView
     private lateinit var btnSos: Button
     private lateinit var txtLocation: TextView
+    private lateinit var notificationAdapter: NotificationAdapter
 
     private var isSosOn = false
     private var handler = Handler(Looper.getMainLooper())
@@ -78,16 +80,13 @@ class Home : AppCompatActivity() {
             database.child(currentUserId)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val firstName =
-                            snapshot.child("firstName").getValue(String::class.java) ?: ""
+                        val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
                         val displayName = firstName.trim()
                         txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
                     }
 
-
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT).show()
                         txtUserName.text = "User"
                     }
                 })
@@ -95,24 +94,61 @@ class Home : AppCompatActivity() {
             txtUserName.text = "Guest"
         }
 
-        // Setup notifications
+        // Setup notifications RecyclerView & adapter
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
-        recyclerNotifications.adapter = NotificationAdapter(
-            listOf(
-                Notification(
-                    "Report from NGO",
-                    "Shelter needed for family in Zone B",
-                    "10 min ago",
-                    "#00FF00"
-                )
-            )
-        )
+        notificationAdapter = NotificationAdapter(mutableListOf())
+        recyclerNotifications.adapter = notificationAdapter
+
+        // ✅ Load latest notification from "notifications" node
+        val notificationRef = FirebaseDatabase.getInstance().getReference("notifications")
+        notificationRef.orderByKey().limitToLast(1)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val notificationList = mutableListOf<Notification>()
+                    for (child in snapshot.children) {
+                        val notif = child.getValue(Notification::class.java)
+                        if (notif != null) {
+                            notificationList.add(notif)
+                        }
+                    }
+                    notificationAdapter.updateNotifications(notificationList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+        // 🔥 Load NGOs from Firebase
+        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
+
+        val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
+        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val ngoList = mutableListOf<Ngo>()
+                for (child in snapshot.children) {
+                    val ngo = child.getValue(Ngo::class.java)
+                    if (ngo != null) {
+                        ngoList.add(ngo)
+                    }
+                }
+                recyclerNgos.adapter = NgoAdapter(ngoList) { selectedNgo ->
+                    val intent = Intent(this@Home, HelpRequestsActivity::class.java)
+                    intent.putExtra("ngoName", selectedNgo.name)
+                    startActivity(intent)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
+            }
+        })
 
         // Setup resources
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
-        recyclerResources.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerResources.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerResources.adapter = ResourceAdapter(
             listOf(
                 Resource("Mental Health Tips", R.drawable.mentalhealth),
@@ -134,47 +170,21 @@ class Home : AppCompatActivity() {
             }
         }
 
-        // 🔥 Load NGOs from Firebase
-        val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
-        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-
-        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
-        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val ngoList = mutableListOf<Ngo>()
-                for (child in snapshot.children) {
-                    val ngo = child.getValue(Ngo::class.java)
-                    if (ngo != null) {
-                        ngoList.add(ngo)
-                    }
-                }
-                recyclerNgos.adapter = NgoAdapter(ngoList)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-
+        // SOS Monitoring
         if (currentUserId != null) {
             val sosRef = database.child(currentUserId).child("sosActive")
             sosStatusListener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val active = snapshot.getValue(Boolean::class.java) ?: false
                     if (isSosOn && !active) {
-                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG)
-                            .show()
+                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG).show()
                     }
                     isSosOn = active
                     updateSosButtonUI()
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT).show()
                 }
             }
             sosRef.addValueEventListener(sosStatusListener!!)
@@ -216,6 +226,8 @@ class Home : AppCompatActivity() {
             )
         }
     }
+
+
 
 
     private fun showMentalHealthTipsDialog() {

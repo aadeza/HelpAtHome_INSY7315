@@ -1,21 +1,28 @@
 package com.example.helpathome
 
 import Ngo
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class NgoAdapter(private val ngos: List<Ngo>) : RecyclerView.Adapter<NgoAdapter.NgoViewHolder>() {
+class NgoAdapter(
+    private val ngos: List<Ngo>,
+    private val onNgoClick: (Ngo) -> Unit // Called when an NGO item is clicked
+) : RecyclerView.Adapter<NgoAdapter.NgoViewHolder>() {
 
     inner class NgoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ngoName: TextView = itemView.findViewById(R.id.ngoName)
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onNgoClick(ngos[position])
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NgoViewHolder {
@@ -24,7 +31,8 @@ class NgoAdapter(private val ngos: List<Ngo>) : RecyclerView.Adapter<NgoAdapter.
     }
 
     override fun onBindViewHolder(holder: NgoViewHolder, position: Int) {
-        holder.ngoName.text = ngos[position].name
+        val ngo = ngos[position]
+        holder.ngoName.text = ngo.name
     }
 
     override fun getItemCount(): Int = ngos.size

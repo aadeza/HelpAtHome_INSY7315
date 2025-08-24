@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -31,7 +32,6 @@ class NGOModel : AppCompatActivity() {
         val btnSubmitNGO = findViewById<Button>(R.id.btnCreateNGO)
         val btnPostUpdate = findViewById<Button>(R.id.btnPostUpdate)
         val btnHelpRequests = findViewById<Button>(R.id.btnHelpRequests)
-        val btnCallUser = findViewById<Button>(R.id.btnCallUser)
 
         val editName = findViewById<EditText>(R.id.editName)
         val editFounder = findViewById<EditText>(R.id.editFounder)
@@ -57,13 +57,35 @@ class NGOModel : AppCompatActivity() {
                     "category" to category,
                     "dateFounded" to dateFounded
                 )
-                db.child("NGOs").push().setValue(ngo)
-                Toast.makeText(this, "✅ NGO Saved!", Toast.LENGTH_SHORT).show()
-                loadNGOData()
+
+                val currentUserEmail = auth.currentUser?.email ?: "Unknown User"
+                val createdDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+
+                // Push NGO and get the key
+                val ngoRef = db.child("NGOs").push()
+                ngoRef.setValue(ngo).addOnSuccessListener {
+                    Toast.makeText(this, "✅ NGO Saved!", Toast.LENGTH_SHORT).show()
+                    loadNGOData()
+
+                    // Create notification map
+                    val notification = mapOf(
+                        "title" to "New NGO Created",
+                        "message" to "Name: $name\nCreated by: $currentUserEmail\nDate: $createdDate",
+                        "time" to createdDate,
+                        "color" to "#4CAF50"  // green color
+                    )
+
+                    // Push notification to Firebase
+                    db.child("notifications").push().setValue(notification)
+                }.addOnFailureListener {
+                    Toast.makeText(this, "❌ Failed to save NGO", Toast.LENGTH_SHORT).show()
+                }
+
             } else {
                 Toast.makeText(this, "❌ Fill all NGO fields", Toast.LENGTH_SHORT).show()
             }
         }
+
 
         // ✅ Post Update
         btnPostUpdate.setOnClickListener {
@@ -81,28 +103,91 @@ class NGOModel : AppCompatActivity() {
             }
         }
 
-        // ✅ View Help Requests
+        // ✅ View & Delete Help Requests
         btnHelpRequests.setOnClickListener {
-            val helpRequests = """
-                📥 Help Requests:
-                • Zone A: Family needs food
-                • Zone B: Legal aid needed
-                • Zone C: Shelter request for 3 people
-            """.trimIndent()
-            txtResults.text = helpRequests
-        }
+            db.child("help_requests").get().addOnSuccessListener { snapshot ->
+                if (!snapshot.hasChildren()) {
+                    txtResults.text = "📥 No help requests found."
+                    return@addOnSuccessListener
+                }
 
-        // ✅ Call user → new screen (we'll build it later)
-        btnCallUser.setOnClickListener {
-            val intent = Intent(this, CallUsersActivity::class.java)
-            startActivity(intent)
+                val builder = StringBuilder()
+                val requests = snapshot.children.toList()
+                val totalRequests = requests.size
+                var processed = 0
+
+                txtResults.text = "Loading help requests..."
+
+                for (request in requests) {
+                    val requestData = request.value as Map<*, *>
+                    val message = requestData["message"] as? String ?: "No message"
+                    val ngo = requestData["ngoName"] as? String ?: "Unknown NGO"
+                    val userId = requestData["userId"] as? String ?: ""
+                    val timestamp = requestData["timestamp"]?.toString()?.toLongOrNull()
+
+                    val formattedTime = timestamp?.let {
+                        val date = java.text.SimpleDateFormat("dd MMM, hh:mm a").format(java.util.Date(it))
+                        " at $date"
+                    } ?: ""
+
+                    db.child("Users").child(userId).get().addOnSuccessListener { userSnapshot ->
+                        val userMap = userSnapshot.value as? Map<*, *>
+                        val firstName = userMap?.get("firstName") as? String ?: "Unknown"
+                        val lastName = userMap?.get("lastName") as? String ?: "User"
+                        val email = userMap?.get("email") as? String ?: "No email"
+                        val fullName = "$firstName $lastName"
+
+                        builder.append("• $message\n")
+                        builder.append("  → For: $ngo$formattedTime\n")
+                        builder.append("  → From: $fullName\n")
+                        builder.append("  → Contact: $email\n")
+                        builder.append("  🗑 Tap to remove this request\n\n")
+
+                        processed++
+                        if (processed == totalRequests) {
+                            txtResults.text = builder.toString()
+                        }
+
+                        // Handle click for deletion
+                        txtResults.setOnClickListener {
+                            showRequestDeletionDialog(request.key!!)
+                        }
+
+                    }.addOnFailureListener {
+                        processed++
+                        if (processed == totalRequests) {
+                            txtResults.text = builder.toString()
+                        }
+                    }
+                }
+
+            }.addOnFailureListener {
+                Toast.makeText(this, "❌ Failed to load help requests", Toast.LENGTH_SHORT).show()
+            }
         }
 
         loadNGOData()
         loadUpdates()
     }
 
-    // Load NGO entries
+    private fun showRequestDeletionDialog(requestId: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Remove Help Request")
+            .setMessage("Are you sure you want to delete this help request?")
+            .setPositiveButton("Yes") { _, _ ->
+                db.child("help_requests").child(requestId).removeValue()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "🗑 Help request removed", Toast.LENGTH_SHORT).show()
+                        txtResults.text = ""
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "❌ Failed to delete", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     private fun loadNGOData() {
         db.child("NGOs").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
@@ -115,7 +200,6 @@ class NGOModel : AppCompatActivity() {
         }
     }
 
-    // Load update posts
     private fun loadUpdates() {
         db.child("NGOUpdates").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
