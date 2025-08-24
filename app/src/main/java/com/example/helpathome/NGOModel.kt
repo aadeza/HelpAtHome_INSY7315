@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.helpathome.MainActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -15,6 +16,7 @@ class NGOModel : AppCompatActivity() {
     private lateinit var txtUserName: TextView
     private lateinit var txtResults: TextView
     private lateinit var db: DatabaseReference
+    private lateinit var userRef : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +24,7 @@ class NGOModel : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseDatabase.getInstance().reference
+        userRef = FirebaseDatabase.getInstance().getReference("Users")
 
         txtUserName = findViewById(R.id.txtUserName)
         txtResults = findViewById(R.id.txtViewResults)
@@ -59,6 +62,7 @@ class NGOModel : AppCompatActivity() {
                 )
 
                 val currentUserEmail = auth.currentUser?.email ?: "Unknown User"
+                val currentUserId = auth.currentUser?.uid ?: ""
                 val createdDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
 
                 // Push NGO and get the key
@@ -77,6 +81,39 @@ class NGOModel : AppCompatActivity() {
 
                     // Push notification to Firebase
                     db.child("notifications").push().setValue(notification)
+
+
+                    userRef.child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                val userType =
+                                    snapshot.child("userType").getValue(String::class.java)
+                                        ?: ""
+                                val fName =
+                                    snapshot.child("firstName").getValue(String::class.java)
+                                        ?: ""
+                                val lName =
+                                    snapshot.child("lastName").getValue(String::class.java)
+                                        ?: ""
+
+
+                                ActivityLogger.log(
+                                    actorId = currentUserId,
+                                    actorType = userType,
+                                    category = "NGO",
+                                    message = "User $fName $lName added an NGO successfully",
+                                    color = "#ff914d"
+                                )
+
+
+
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Toast.makeText(this@NGOModel, "Database error: ${error.message}", Toast.LENGTH_LONG).show()
+                        }
+                    })
                 }.addOnFailureListener {
                     Toast.makeText(this, "❌ Failed to save NGO", Toast.LENGTH_SHORT).show()
                 }

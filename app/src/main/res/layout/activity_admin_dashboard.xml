@@ -109,9 +109,12 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerSystemActivities"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
+                android:layout_height="180dp"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
                 tools:listitem="@layout/item_sysactivity" />
+
         </LinearLayout>
 
         <!-- NGOs Section -->
@@ -138,7 +141,9 @@
                 android:id="@+id/recyclerProfiles"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:orientation="horizontal"
                 tools:listitem="@layout/item_ngoprofiles" />
         </LinearLayout>
 
@@ -146,7 +151,7 @@
         <LinearLayout
             android:id="@+id/resourcesSection"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="230dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -167,8 +172,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
                 android:overScrollMode="never"
-                android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_users" />
 
         </LinearLayout>

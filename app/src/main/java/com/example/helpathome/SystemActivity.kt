@@ -5,6 +5,6 @@ data class SystemActivity(
     val actorType: String = "",
     val category: String = "",
     val message: String = "",
-    val timestamp: Long = 0,
+    val timestamp: Long = 0L,
     val color: String = ""
 )

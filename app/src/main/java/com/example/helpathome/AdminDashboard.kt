@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -43,6 +44,10 @@ class AdminDashboard : AppCompatActivity() {
         ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
 
 
+
+        recyclerUsers = findViewById(R.id.recyclerManageUsers)
+        recyclerNGOProfiles = findViewById(R.id.recyclerProfiles)
+        recyclerActivities = findViewById(R.id.recyclerSystemActivities)
 
         txtUserName = findViewById(R.id.txtUserName)
 
@@ -83,50 +88,66 @@ class AdminDashboard : AppCompatActivity() {
     }
 
     private fun setupUsersRecycler() {
-        recyclerUsers = findViewById(R.id.recyclerManageUsers)
-        recyclerUsers.layoutManager = LinearLayoutManager(this)
+        recyclerUsers.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         usersAdapter = UsersAdapter(usersList) { user, newStatus ->
             updateStatus(user.id, newStatus)
         }
         recyclerUsers.adapter = usersAdapter
+
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerUsers)
+
     }
 
     private fun setupNGORecycler() {
-        recyclerNGOProfiles = findViewById(R.id.recyclerProfiles)
-        recyclerNGOProfiles.layoutManager = LinearLayoutManager(this)
+        recyclerNGOProfiles.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         ngoProfileAdapter = NGOProfilesAdapter(profilesList) { ngo, newStatus ->
             updateProfileStatus( ngo.id, newStatus)
         }
         recyclerNGOProfiles.adapter = ngoProfileAdapter
+
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerNGOProfiles)
+
     }
 
     private fun setupSystemActivityRecycler() {
-        recyclerActivities = findViewById<RecyclerView>(R.id.recyclerSystemActivities)
-        recyclerActivities.layoutManager = LinearLayoutManager(this)
+
+        recyclerActivities.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
         systemActivityAdapter = SystemActivityAdapter(logs)
-
         recyclerActivities.adapter = systemActivityAdapter
+
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerActivities)
+
     }
 
 
 
-    private fun fetchSystemActivities(){
-        dataBase.orderByChild("timestamp").addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot){
-                logs.clear()
-                for(logSnap in snapshot.children){
-                    val log = logSnap.getValue(SystemActivity::class.java)
-                    log?.let { logs.add(it)}
+    private fun fetchSystemActivities() {
+        FirebaseDatabase.getInstance().reference
+            .child("SystemLogs")
+            .orderByChild("timestamp")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    logs.clear()
+                    for (logSnap in snapshot.children) {
+                        val log = logSnap.getValue(SystemActivity::class.java)
+                        log?.let { logs.add(it) }
+                    }
+                    logs.reverse()
+                    systemActivityAdapter.notifyDataSetChanged()
                 }
-                logs.reverse()
-                systemActivityAdapter.notifyDataSetChanged()
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@AdminDashboard, "Failed to load logs", Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@AdminDashboard, "Failed to load logs", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+
+
     private fun loadUsers() {
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -138,11 +159,9 @@ class AdminDashboard : AppCompatActivity() {
                     val firstName = userSnap.child("firstName").getValue(String::class.java) ?: "unknown"
                     val lastName = userSnap.child("lastName").getValue(String::class.java) ?: ""
                     val userType = userSnap.child("userType").getValue(String::class.java) ?: "unknown"
-                    val locationMap = userSnap.child("lastKnownLocation").value as? Map<*, *>
-                    val locationString = locationMap?.toString() ?: "unknown"
                     val accountStatus = userSnap.child("accountStatus").getValue(String::class.java) ?: "active"
 
-                    usersList.add(Users(userId, firstName, lastName,userType, locationString, accountStatus))
+                    usersList.add(Users(userId, firstName, lastName,userType, accountStatus))
                 }
                 usersAdapter.notifyDataSetChanged()
             }
@@ -244,6 +263,7 @@ class AdminDashboard : AppCompatActivity() {
 
                 }
                 val actorId = auth.currentUser?.uid ?: "unknown"
+
                 ActivityLogger.log(
                     actorId = actorId,
                     actorType = "admin",

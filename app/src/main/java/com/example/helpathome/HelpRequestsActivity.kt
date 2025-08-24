@@ -46,13 +46,14 @@ class HelpRequestsActivity : AppCompatActivity() {
             }
 
             val userId = currentUser.uid
-            val userRef = database.getReference("users").child(userId)
+            val userRef = database.getReference("Users").child(userId)
 
             // Fetch user info (name, surname) before sending request
             userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val firstName = snapshot.child("firstName").getValue(String::class.java) ?: "Unknown"
                     val lastName = snapshot.child("lastName").getValue(String::class.java) ?: "User"
+                    val userType = snapshot.child("userType").getValue(String::class.java) ?: "Civillian"
                     val fullName = "$firstName $lastName"
 
                     val request = mapOf(
@@ -72,6 +73,14 @@ class HelpRequestsActivity : AppCompatActivity() {
                             tvStatus.setTextColor(resources.getColor(android.R.color.holo_green_dark))
                             tvStatus.text = "✅ Request sent successfully!"
                             etHelpMessage.text.clear()
+
+                            ActivityLogger.log(
+                                actorId = userId,
+                                actorType = userType,
+                                category = "Help Request",
+                                message = "User $fullName sent help request to $ngoName",
+                                color = "#ff8be2"
+                            )
                         }
                         .addOnFailureListener {
                             tvStatus.visibility = View.VISIBLE

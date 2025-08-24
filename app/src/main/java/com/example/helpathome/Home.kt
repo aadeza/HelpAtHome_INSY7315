@@ -94,7 +94,8 @@ class Home : AppCompatActivity() {
             txtUserName.text = "Guest"
         }
 
-        // Setup notifications RecyclerView & adapter
+
+
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
         notificationAdapter = NotificationAdapter(mutableListOf())
@@ -511,7 +512,7 @@ class Home : AppCompatActivity() {
                                         actorId = currentUserId,
                                         actorType = userType,
                                         category = "SOS Alert",
-                                        message = "User $fName $lName logged up successfully",
+                                        message = "User $fName $lName triggered the SOS button",
                                         color = "#880808"
                                     )
                                 }

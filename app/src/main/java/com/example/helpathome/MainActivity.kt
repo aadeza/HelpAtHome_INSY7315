@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                                             actorId = userId,
                                             actorType = userType,
                                             category = "Login",
-                                            message = "User $fName $lName logged up successfully",
+                                            message = "User $fName $lName logged in successfully",
                                             color = "#4CAF50"
                                         )
 

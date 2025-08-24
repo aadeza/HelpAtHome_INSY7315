@@ -17,7 +17,6 @@ class UsersAdapter(private val users: List<Users>, private val onStatusChange: (
         val username: TextView = view.findViewById(R.id.userName)
         val userType: TextView = view.findViewById(R.id.userType)
         val statusText: TextView = view.findViewById(R.id.accStatus)
-        val location: TextView = view.findViewById(R.id.location)
         val suspend: Button = view.findViewById(R.id.buttonSuspend)
         val remove: Button = view.findViewById(R.id.buttonRemove)
     }
@@ -35,7 +34,6 @@ class UsersAdapter(private val users: List<Users>, private val onStatusChange: (
         holder.username.text = "${user.name} ${user.lastName}"
         holder.userType.text = "User Type: ${user.userType}"
         holder.statusText.text = "Account Status: ${user.accountStatus}"
-        holder.location.text = "Location: ${user.location}"
 
         holder.suspend.setOnClickListener{
             onStatusChange(user, "suspended")
