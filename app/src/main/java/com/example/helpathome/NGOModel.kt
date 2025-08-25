@@ -12,11 +12,11 @@ import com.google.firebase.database.*
 
 class NGOModel : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
-    private lateinit var txtUserName: TextView
-    private lateinit var txtResults: TextView
-    private lateinit var db: DatabaseReference
-    private lateinit var userRef : DatabaseReference
+   lateinit var auth: FirebaseAuth
+     lateinit var txtUserName: TextView
+ lateinit var txtResults: TextView
+ lateinit var db: DatabaseReference
+ lateinit var userRef : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +100,7 @@ class NGOModel : AppCompatActivity() {
                                 ActivityLogger.log(
                                     actorId = currentUserId,
                                     actorType = userType,
-                                    category = "NGO",
+                                    category = "NGO Creation",
                                     message = "User $fName $lName added an NGO successfully",
                                     color = "#ff914d"
                                 )

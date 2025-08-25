@@ -266,7 +266,7 @@ class AdminDashboard : AppCompatActivity() {
 
                 ActivityLogger.log(
                     actorId = actorId,
-                    actorType = "admin",
+                    actorType = "Admin",
                     category = "Updated Account Status",
                     message = "User ${usersList[index].name} ${usersList[index].lastName} status changed to $newStatus",
                     color = "#ABCDDE"
@@ -291,9 +291,9 @@ class AdminDashboard : AppCompatActivity() {
                 val actorId = auth.currentUser?.uid ?: "unknown"
                 ActivityLogger.log(
                     actorId = actorId,
-                    actorType = "admin",
-                    category = "Updated Account Status",
-                    message = "User ${usersList[index].name} ${usersList[index].lastName} status changed to $newStatus",
+                    actorType = "Admin",
+                    category = "Approved NGO Profile",
+                    message = "User ${usersList[index].name} ${usersList[index].lastName} approved ${profilesList[index].name}'s profile",
                     color = "#ABCDDE"
                 )
 

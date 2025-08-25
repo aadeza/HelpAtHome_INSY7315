@@ -29,7 +29,7 @@ class CallUserActivity : AppCompatActivity() {
         val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
         listView.adapter = adapter
 
-        // ✅ Save New Contact
+
         btnSave.setOnClickListener {
             val name = editName.text.toString().trim()
             val phone = editPhone.text.toString().trim()
@@ -48,7 +48,7 @@ class CallUserActivity : AppCompatActivity() {
             }
         }
 
-        // 📲 Load contacts from Firebase
+
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 adapter.clear()

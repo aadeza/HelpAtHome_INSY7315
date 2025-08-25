@@ -9,8 +9,8 @@ import com.google.firebase.database.*
 
 class HelpRequestsActivity : AppCompatActivity() {
 
-    private lateinit var database: FirebaseDatabase
-    private lateinit var auth: FirebaseAuth
+    lateinit var database: FirebaseDatabase
+    lateinit var auth: FirebaseAuth
     private lateinit var tvStatus: TextView
     private lateinit var etHelpMessage: EditText
     private lateinit var tvNgoName: TextView
@@ -20,8 +20,13 @@ class HelpRequestsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help_request)
 
-        database = FirebaseDatabase.getInstance()
-        auth = FirebaseAuth.getInstance()
+
+        if (!::database.isInitialized) {
+            database = FirebaseDatabase.getInstance()
+        }
+        if (!::auth.isInitialized) {
+            auth = FirebaseAuth.getInstance()
+        }
 
         // UI elements
         tvNgoName = findViewById(R.id.tvNgoName)
@@ -64,7 +69,6 @@ class HelpRequestsActivity : AppCompatActivity() {
                         "timestamp" to System.currentTimeMillis()
                     )
 
-                    // Send request to help_requests
                     database.getReference("help_requests")
                         .push()
                         .setValue(request)
@@ -96,4 +100,3 @@ class HelpRequestsActivity : AppCompatActivity() {
         }
     }
 }
-
