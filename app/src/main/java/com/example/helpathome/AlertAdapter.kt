@@ -8,6 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.helpathome.R
 import com.example.helpathome.models.alerts
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AlertAdapter(
     private val alertList: List<alerts>,
@@ -18,6 +20,7 @@ class AlertAdapter(
     class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textUserId: TextView = itemView.findViewById(R.id.textUserId)
         val textLocation: TextView = itemView.findViewById(R.id.textLocation)
+        val textTimestamp: TextView = itemView.findViewById(R.id.textTimestamp)
         val buttonResolve: Button = itemView.findViewById(R.id.buttonResolve)
         val buttonDelete: Button = itemView.findViewById(R.id.buttonDelete)
     }
@@ -32,10 +35,13 @@ class AlertAdapter(
 
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alertList[position]
-        holder.textUserId.text = "User ID: ${alert.userId}"
+
+        holder.textUserId.text = "User ID: ${alert.userId ?: "Unknown"}"
         holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?: "Unknown"}"
 
-        // Show resolve button only for active alerts
+        val timestamp = alert.lastKnownLocation?.timestamp ?: alert.resolvedAt
+        holder.textTimestamp.text = "Time: ${formatTimestamp(timestamp)}"
+
         holder.buttonResolve.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
 
         holder.buttonResolve.setOnClickListener {
@@ -46,4 +52,12 @@ class AlertAdapter(
             onDeleteClick(alert)
         }
     }
+
+    private fun formatTimestamp(timestamp: Long?): String {
+        return timestamp?.let {
+            val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+            sdf.format(Date(it))
+        } ?: "Unknown time"
+    }
 }
+

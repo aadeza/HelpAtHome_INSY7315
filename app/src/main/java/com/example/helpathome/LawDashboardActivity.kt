@@ -1,6 +1,7 @@
 package com.example.helpathome
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -67,7 +68,8 @@ class LawDashboardActivity : AppCompatActivity() {
                     val alert = alerts(
                         userId = userId,
                         lastKnownLocation = lastLocation,
-                        sosActive = true
+                        sosActive = true,
+                        resolvedAt = null
                     )
                     alertList.add(alert)
                 }
@@ -90,8 +92,11 @@ class LawDashboardActivity : AppCompatActivity() {
                 resolvedAlertList.clear()
                 snapshot.children.forEach { userSnap ->
                     val userId = userSnap.key ?: return@forEach
-                    val sosActive = userSnap.child("sosActive").getValue(Boolean::class.java) ?: true
-                    if (sosActive) return@forEach // only resolved
+                    val sosActive = userSnap.child("sosActive").getValue(Boolean::class.java) ?: false
+                    if (sosActive) return@forEach
+
+                    val resolvedAt = userSnap.child("resolvedAt").getValue(Long::class.java)
+                    if (resolvedAt == null) return@forEach // Skip users with no resolution timestamp
 
                     val lastLocation = userSnap.child("lastKnownLocation")
                         .getValue(LastKnownLocation::class.java)
@@ -99,7 +104,8 @@ class LawDashboardActivity : AppCompatActivity() {
                     val alert = alerts(
                         userId = userId,
                         lastKnownLocation = lastLocation,
-                        sosActive = false
+                        sosActive = false,
+                        resolvedAt = resolvedAt
                     )
                     resolvedAlertList.add(alert)
                 }
@@ -116,9 +122,15 @@ class LawDashboardActivity : AppCompatActivity() {
         })
     }
 
+
+
     private fun markAsResolved(alert: alerts) {
         val userId = alert.userId ?: return
-        usersRef.child(userId).child("sosActive").setValue(false)
+        val updates = mapOf(
+            "sosActive" to false,
+            "resolvedAt" to System.currentTimeMillis()
+        )
+        usersRef.child(userId).updateChildren(updates)
             .addOnSuccessListener {
                 Toast.makeText(this, "Alert marked as resolved", Toast.LENGTH_SHORT).show()
             }
@@ -138,3 +150,4 @@ class LawDashboardActivity : AppCompatActivity() {
             }
     }
 }
+
