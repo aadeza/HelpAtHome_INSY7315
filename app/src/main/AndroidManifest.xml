@@ -34,10 +34,11 @@
         <activity android:name=".Home" android:exported="false" />
         <activity android:name=".SignUp" android:exported="false" />
         <activity android:name=".NGOModel" android:exported="false" />
-        <activity android:name=".CallUserActivity" android:exported="false" /> <!-- confirm exact class name -->
+        <activity android:name=".CallUserActivity" android:exported="false" />
         <activity android:name=".LawDashboardActivity" android:exported="false" />
         <activity android:name=".AdminDashboard" android:exported="false" />
-        <activity android:name=".HelpRequestsActivity" android:exported="false" /> <!-- Missing, added -->
+        <activity android:name=".HelpRequestsActivity" android:exported="false" />
+        <activity android:name=".Statistics" android:exported="false" />
 
     </application>
 </manifest>

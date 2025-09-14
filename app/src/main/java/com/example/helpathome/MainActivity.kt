@@ -55,81 +55,129 @@ class MainActivity : ComponentActivity() {
                     if (task.isSuccessful) {
                         val userId = auth.currentUser?.uid
                         if (userId != null) {
+                            // Read the user data from the database
+                            database.child(userId)
+                                .addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.exists()) {
+                                            // ✅ Check accountStatus before proceeding
+                                            val accountStatus = snapshot.child("accountStatus")
+                                                .getValue(String::class.java) ?: "active"
 
-                            database.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if (snapshot.exists()) {
-                                        val userType =
-                                            snapshot.child("userType").getValue(String::class.java)
-                                                ?: ""
-                                        val fName =
-                                            snapshot.child("firstName").getValue(String::class.java)
-                                                ?: ""
-                                        val lName =
-                                            snapshot.child("lastName").getValue(String::class.java)
-                                                ?: ""
+                                            when (accountStatus.lowercase()) {
+                                                "removed" -> {
+                                                    auth.signOut()
+                                                    Toast.makeText(
+                                                        this@MainActivity,
+                                                        "Your account has been removed. Contact support.",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                    return
+                                                }
 
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            "Welcome $fName $lName",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                                "suspended" -> {
+                                                    auth.signOut()
+                                                    Toast.makeText(
+                                                        this@MainActivity,
+                                                        "Your account is suspended. Please contact support.",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                    return
+                                                }
+                                                // If active, continue below
+                                            }
 
-                                        ActivityLogger.log(
-                                            actorId = userId,
-                                            actorType = userType,
-                                            category = "Login",
-                                            message = "User $fName $lName logged in successfully",
-                                            color = "#4CAF50"
-                                        )
+                                            val userType =
+                                                snapshot.child("userType")
+                                                    .getValue(String::class.java) ?: ""
+                                            val fName =
+                                                snapshot.child("firstName")
+                                                    .getValue(String::class.java) ?: ""
+                                            val lName =
+                                                snapshot.child("lastName")
+                                                    .getValue(String::class.java) ?: ""
 
-                                        when (userType) {
-                                            "Admin" -> startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    AdminDashboard::class.java
-                                                )
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Welcome $fName $lName",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                            ActivityLogger.log(
+                                                actorId = userId,
+                                                actorType = userType,
+                                                category = "Login",
+                                                message = "User $fName $lName logged in successfully",
+                                                color = "#4CAF50"
                                             )
 
-                                            "NGO" -> startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    NGOModel::class.java
+                                            // Redirect based on userType
+                                            when (userType) {
+                                                "Admin" -> startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        AdminDashboard::class.java
+                                                    )
                                                 )
-                                            )
 
-                                            "Civilian" -> startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    Home::class.java
+                                                "NGO" -> startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        NGOModel::class.java
+                                                    )
                                                 )
-                                            )
-                                            "Law enforcement" -> startActivity(
-                                                Intent(
-                                                    this@MainActivity,
-                                                    LawDashboardActivity::class.java
+
+                                                "Civilian" -> startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        Home::class.java
+                                                    )
                                                 )
-                                            )
-                                            else -> Toast.makeText(
+
+                                                "Law enforcement" -> startActivity(
+                                                    Intent(
+                                                        this@MainActivity,
+                                                        LawDashboardActivity::class.java
+                                                    )
+                                                )
+
+                                                else -> Toast.makeText(
+                                                    this@MainActivity,
+                                                    "User data not found in database!",
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
+                                            finish()
+                                        } else {
+                                            Toast.makeText(
                                                 this@MainActivity,
                                                 "User data not found in database!",
                                                 Toast.LENGTH_LONG
                                             ).show()
                                         }
-                                        finish()
                                     }
-                                }
 
-                                override fun onCancelled(error: DatabaseError) {
-                                    Toast.makeText(this@MainActivity, "Database error: ${error.message}", Toast.LENGTH_LONG).show()
-                                }
-                            })
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Database error: ${error.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                })
                         } else {
-                            Toast.makeText(this@MainActivity, "User ID not found!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "User ID not found!",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     } else {
-
-                        Toast.makeText(this@MainActivity, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Login failed: ${task.exception?.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
         }

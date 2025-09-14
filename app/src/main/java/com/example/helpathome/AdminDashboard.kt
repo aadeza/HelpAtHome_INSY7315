@@ -1,7 +1,9 @@
 package com.example.helpathome
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -33,6 +36,8 @@ class AdminDashboard : AppCompatActivity() {
     private lateinit var systemActivityAdapter : SystemActivityAdapter
     private val dataBase = FirebaseDatabase.getInstance().reference.child("SystemLogs")
 
+    private lateinit var statsBtn: FloatingActionButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,7 +49,7 @@ class AdminDashboard : AppCompatActivity() {
         ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
 
 
-
+        statsBtn = findViewById(R.id.fab)
         recyclerUsers = findViewById(R.id.recyclerManageUsers)
         recyclerNGOProfiles = findViewById(R.id.recyclerProfiles)
         recyclerActivities = findViewById(R.id.recyclerSystemActivities)
@@ -63,6 +68,10 @@ class AdminDashboard : AppCompatActivity() {
         loadNGOs()
         fetchSystemActivities()
 
+        statsBtn.setOnClickListener{
+            val intent = Intent(this, Statistics::class.java)
+            startActivity(intent)
+        }
 
     }
 
@@ -86,6 +95,7 @@ class AdminDashboard : AppCompatActivity() {
             txtUserName.text = "Guest"
         }
     }
+
 
     private fun setupUsersRecycler() {
         recyclerUsers.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -205,7 +215,7 @@ class AdminDashboard : AppCompatActivity() {
                 val userId = userSnap.key ?: continue
                 val currentStatus = userSnap.child("accountStatus").getValue(String::class.java)
 
-                // Fix incorrect "Awaiting Approval" for Users
+
                 if (currentStatus == null || currentStatus == "Awaiting Approval") {
                     userRef.child(userId).child("accountStatus").setValue("active")
                         .addOnSuccessListener {
