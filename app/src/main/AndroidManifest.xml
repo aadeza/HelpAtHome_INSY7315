@@ -17,12 +17,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HelpAtHome"
         tools:targetApi="31">
+
         <activity
             android:name=".NgoAdapter"
             android:exported="false" />
-        <activity
-            android:name=".Ngo"
-            android:exported="false" />
+
         <activity
             android:name=".ResourceAdapter"
             android:exported="false" />
@@ -35,6 +34,8 @@
         <activity
             android:name=".Notification"
             android:exported="false" />
+
+
         <activity
             android:name=".Home"
             android:exported="false" />
@@ -42,7 +43,16 @@
             android:name=".SignUp"
             android:exported="false" />
         <activity
-            android:name=".LawDashboardActivity" />
+            android:name=".NGOModel"
+            android:exported="false" />
+
+        <activity
+            android:name=".CallUserActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".CallUsersActivity"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"

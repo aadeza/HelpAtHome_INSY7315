@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Get current user ID
+
                         val userId = auth.currentUser?.uid
 
                         if (userId != null) {
@@ -64,6 +64,7 @@ class MainActivity : ComponentActivity() {
                                     // Send to law enforcement dashboard
                                     startActivity(Intent(this, LawDashboardActivity::class.java))
                                 } else {
+
                                     // Send to regular home screen
                                     startActivity(Intent(this, LawDashboardActivity::class.java))
                                 }
@@ -78,6 +79,10 @@ class MainActivity : ComponentActivity() {
                             startActivity(Intent(this, LawDashboardActivity::class.java))
                             finish()
                         }
+
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, NGOModel::class.java))
+                        finish()
                     } else {
                         Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
