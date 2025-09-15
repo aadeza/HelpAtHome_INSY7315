@@ -1,10 +1,12 @@
 package com.example.helpathome.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.helpathome.R
 import com.example.helpathome.models.alerts
@@ -36,21 +38,34 @@ class AlertAdapter(
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alertList[position]
 
-        holder.textUserId.text = "User ID: ${alert.userId ?: "Unknown"}"
-        holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?: "Unknown"}"
+
+        val userIdText = "User ID: ${alert.userId ?: "Unknown"}"
+        val statusEmoji = if (alert.sosActive) "🔴" else "✅"
+        val statusText = if (alert.sosActive) "ACTIVE" else "RESOLVED"
+
+        holder.textUserId.text = "$userIdText  •  $statusEmoji $statusText"
+        holder.textUserId.text = "User ID: ${alert.userId ?: "Unkown"}"
+        holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?:"Unknown"}"
+
+        // Tap-to-copy user ID
+        holder.textUserId.setOnClickListener {
+            val clipboard = holder.itemView.context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("User ID", alert.userId ?: "")
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(holder.itemView.context, "User ID copied", Toast.LENGTH_SHORT).show()
+        }
 
         val timestamp = alert.lastKnownLocation?.timestamp ?: alert.resolvedAt
-        holder.textTimestamp.text = "Time: ${formatTimestamp(timestamp)}"
+        val formattedTime = formatTimestamp(timestamp)
+        val timeAgo = getTimeAgo(timestamp)
 
+        holder.textTimestamp.text = "🕒 $formattedTime  •  $timeAgo"
+
+
+        // Resolve button visibility and actions
         holder.buttonResolve.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
-
-        holder.buttonResolve.setOnClickListener {
-            onResolveClick(alert)
-        }
-
-        holder.buttonDelete.setOnClickListener {
-            onDeleteClick(alert)
-        }
+        holder.buttonResolve.setOnClickListener { onResolveClick(alert) }
+        holder.buttonDelete.setOnClickListener { onDeleteClick(alert) }
     }
 
     private fun formatTimestamp(timestamp: Long?): String {
@@ -59,5 +74,22 @@ class AlertAdapter(
             sdf.format(Date(it))
         } ?: "Unknown time"
     }
-}
+        private fun getTimeAgo(timestamp: Long?): String {
+            if (timestamp == null) return "Unknown time"
+            val now = System.currentTimeMillis()
+            val diff = now - timestamp
 
+            val seconds = diff / 1000
+            val minutes = seconds / 60
+            val hours = minutes / 60
+            val days = hours / 24
+
+            return when {
+                days > 0 -> "$days day${if (days > 1) "s" else ""} ago"
+                hours > 0 -> "$hours hour${if (hours > 1) "s" else ""} ago"
+                minutes > 0 -> "$minutes minute${if (minutes > 1) "s" else ""} ago"
+                else -> "Just now"
+            }
+        }
+
+    }

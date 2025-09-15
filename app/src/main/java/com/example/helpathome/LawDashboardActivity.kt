@@ -1,7 +1,7 @@
 package com.example.helpathome
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,6 +10,8 @@ import com.example.helpathome.adapters.AlertAdapter
 import com.example.helpathome.models.LastKnownLocation
 import com.example.helpathome.models.alerts
 import com.google.firebase.database.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LawDashboardActivity : AppCompatActivity() {
 
@@ -22,6 +24,8 @@ class LawDashboardActivity : AppCompatActivity() {
     private val resolvedAlertList = mutableListOf<alerts>()
 
     private lateinit var usersRef: DatabaseReference
+    private lateinit var summaryTextView: TextView
+    private lateinit var syncTimeTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +33,9 @@ class LawDashboardActivity : AppCompatActivity() {
 
         usersRef = FirebaseDatabase.getInstance().getReference("Users")
 
-        // Active alerts
+        summaryTextView = findViewById(R.id.textSummary)
+        syncTimeTextView = findViewById(R.id.textSyncTime)
+
         recyclerView = findViewById(R.id.recyclerAlerts)
         recyclerView.layoutManager = LinearLayoutManager(this)
         alertAdapter = AlertAdapter(
@@ -39,7 +45,6 @@ class LawDashboardActivity : AppCompatActivity() {
         )
         recyclerView.adapter = alertAdapter
 
-        // Resolved alerts
         resolvedRecyclerView = findViewById(R.id.recyclerResolvedAlerts)
         resolvedRecyclerView.layoutManager = LinearLayoutManager(this)
         resolvedAlertAdapter = AlertAdapter(
@@ -74,6 +79,7 @@ class LawDashboardActivity : AppCompatActivity() {
                     alertList.add(alert)
                 }
                 alertAdapter.notifyDataSetChanged()
+                updateSummaryAndSyncTime()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -96,7 +102,7 @@ class LawDashboardActivity : AppCompatActivity() {
                     if (sosActive) return@forEach
 
                     val resolvedAt = userSnap.child("resolvedAt").getValue(Long::class.java)
-                    if (resolvedAt == null) return@forEach // Skip users with no resolution timestamp
+                    if (resolvedAt == null) return@forEach
 
                     val lastLocation = userSnap.child("lastKnownLocation")
                         .getValue(LastKnownLocation::class.java)
@@ -110,6 +116,7 @@ class LawDashboardActivity : AppCompatActivity() {
                     resolvedAlertList.add(alert)
                 }
                 resolvedAlertAdapter.notifyDataSetChanged()
+                updateSummaryAndSyncTime()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -122,7 +129,14 @@ class LawDashboardActivity : AppCompatActivity() {
         })
     }
 
+    private fun updateSummaryAndSyncTime() {
+        val activeCount = alertList.size
+        val resolvedCount = resolvedAlertList.size
+        summaryTextView.text = "Active: $activeCount | Resolved: $resolvedCount"
 
+        val lastSync = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        syncTimeTextView.text = "Last synced at: $lastSync"
+    }
 
     private fun markAsResolved(alert: alerts) {
         val userId = alert.userId ?: return
@@ -150,4 +164,3 @@ class LawDashboardActivity : AppCompatActivity() {
             }
     }
 }
-
