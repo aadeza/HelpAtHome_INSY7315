@@ -1,3 +1,4 @@
+
 data class Ngo(
     val name: String = "",
     val category: String = "",

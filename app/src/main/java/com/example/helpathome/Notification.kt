@@ -1,8 +1,10 @@
 package com.example.helpathome
 
 data class Notification(
-    val title: String,
-    val message: String,
-    val time: String,
-    val color: String // Hex string like "#FF0000"
+    val title: String = "",
+    val message: String = "",
+    val time: String = "",
+    val color: String = "#4CAF50"
 )
+
+

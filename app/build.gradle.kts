@@ -18,6 +18,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -57,10 +59,17 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.play.services.location)
 
-    // 🔥 Firebase dependencies
+
+
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.database.ktx)
     implementation(libs.play.services.auth)
+    implementation(libs.mpandroidchart)
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -69,4 +78,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }

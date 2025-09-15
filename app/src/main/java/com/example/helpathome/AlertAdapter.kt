@@ -1,4 +1,4 @@
-package com.example.helpathome.adapters
+package com.example.helpathome
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -11,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.helpathome.R
 import com.example.helpathome.models.alerts
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+
 
 class AlertAdapter(
     private val alertList: List<alerts>,
@@ -22,7 +24,6 @@ class AlertAdapter(
     class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textUserId: TextView = itemView.findViewById(R.id.textUserId)
         val textLocation: TextView = itemView.findViewById(R.id.textLocation)
-        val textTimestamp: TextView = itemView.findViewById(R.id.textTimestamp)
         val buttonResolve: Button = itemView.findViewById(R.id.buttonResolve)
         val buttonDelete: Button = itemView.findViewById(R.id.buttonDelete)
     }
@@ -59,10 +60,10 @@ class AlertAdapter(
         val formattedTime = formatTimestamp(timestamp)
         val timeAgo = getTimeAgo(timestamp)
 
-        holder.textTimestamp.text = "🕒 $formattedTime  •  $timeAgo"
+        holder.textUserId.text = "User ID: ${alert.userId}"
+        holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?: "Unknown"}"
 
 
-        // Resolve button visibility and actions
         holder.buttonResolve.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
         holder.buttonResolve.setOnClickListener { onResolveClick(alert) }
         holder.buttonDelete.setOnClickListener { onDeleteClick(alert) }

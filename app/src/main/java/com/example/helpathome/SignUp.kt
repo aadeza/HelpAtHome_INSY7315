@@ -61,7 +61,18 @@ class SignUp : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(emailText, pass)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val userId = auth.currentUser?.uid
+                        val userId = auth.currentUser?.uid ?: "unknown"
+
+
+                        ActivityLogger.log(
+                            actorId = userId,
+                            actorType = type,
+                            category = "Sign Up",
+                            message = "User $fName $lName signed up successfully",
+                            color = "#4CAF50" // green for success
+                        )
+
+                        // Now save user profile in DB
                         val user = mapOf(
                             "firstName" to fName,
                             "lastName" to lName,
@@ -72,17 +83,32 @@ class SignUp : AppCompatActivity() {
                         )
 
                         FirebaseDatabase.getInstance().getReference("Users")
-                            .child(userId ?: "unknown")
+                            .child(userId)
                             .setValue(user)
-                            .addOnCompleteListener {
-                                Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this, MainActivity::class.java))
-                                finish()
+                            .addOnCompleteListener { dbTask ->
+                                if (dbTask.isSuccessful) {
+                                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, MainActivity::class.java))
+                                    finish()
+                                } else {
+
+                                    ActivityLogger.log(
+                                        actorId = userId,
+                                        actorType = type,
+                                        category = "Error",
+                                        message = "Failed to save user profile for $fName $lName: ${dbTask.exception?.message}",
+                                        color = "#FF0000" // red for error
+                                    )
+
+                                    Toast.makeText(this, "Account created but profile not saved: ${dbTask.exception?.message}", Toast.LENGTH_LONG).show()
+                                }
                             }
+
                     } else {
                         Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
+
     }
 }

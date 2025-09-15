@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewLawDashboard"
@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#E3F2FD"
-            android:text="• Ensure all alerts are verified before marking as resolved.\n• Maintain confidentiality of user data.\n• For any technical issues, contact admin support immediately.\n\n• Dispatch: +27 11 123 4567\n• National Command Center: +27 86 000 1234\n• Fire Department: +27 11 987 6543\n• Emergency Medical Services: +27 11 246 8100\n• Forensics Unit: +27 11 369 2580\n\n• Protocol Reminder:  \n   - Use secure radio channels for sensitive updates."
+            android:text="• Ensure all alerts are verified before marking as resolved.\n• Maintain confidentiality of user data.\n• For any technical issues, contact admin support immediately.\n\n• Dispatch: +27 11 123 4567\n• National Command Center: +27 86 000 1234\n• Fire Department: +27 11 987 6543\n• Emergency Medical Services: +27 11 246 8100\n• Forensics Unit: +27 11 369 2580\n\n• Code 1: Immediate Response\n• Code 2: Non-Emergency\n• Code 3: Backup Required\n\n• Protocol Reminder:  \n   - Use secure radio channels for sensitive updates."
             android:textColor="#000000"
             android:textSize="14sp"
             android:lineSpacingExtra="6dp"
@@ -118,7 +118,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerAlerts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:nestedScrollingEnabled="false"
             android:scrollbars="vertical"
             tools:listitem="@layout/alert_item" />
@@ -138,10 +138,14 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerResolvedAlerts"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:nestedScrollingEnabled="false"
             android:scrollbars="vertical"
             tools:listitem="@layout/alert_item" />
 
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+
+
+</ScrollView>
+

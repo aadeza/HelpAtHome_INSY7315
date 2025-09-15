@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ngoProfile"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:id="@+id/ngoProfileCard"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:padding="6dp">
+
+        <TextView
+            android:id="@+id/ngoTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NGO Profile Info"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/ngoName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NGO name:"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/ngoFounder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Founder:"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/ngoCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category:"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/dateFounded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date founded:"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:id="@+id/profileStaus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile Status:"
+            android:textColor="@color/black"/>
+
+
+        <LinearLayout
+            android:id="@+id/llayout2"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            >
+
+            <Button
+                android:id="@+id/buttonApprove"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Approve"
+                android:textColor="@color/black"
+                />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

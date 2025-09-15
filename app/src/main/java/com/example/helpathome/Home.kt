@@ -5,6 +5,7 @@ import android.Manifest
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
@@ -15,6 +16,8 @@ import android.os.Looper
 import android.text.format.DateUtils
 import android.view.MotionEvent
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -25,22 +28,94 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.util.*
 
-class Home : AppCompatActivity() {
+class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
+
+    override fun onSaveClicked(
+        currentPass: String,
+        newName: String,
+        newSurname: String,
+        newEmail: String,
+        newPassword: String
+    ) {
+        val user = auth.currentUser
+        if (user == null) {
+            Toast.makeText(this, "No logged-in user", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val credential = EmailAuthProvider.getCredential(user.email!!, currentPass)
+
+        // Step 1: Reauthenticate
+        user.reauthenticate(credential).addOnSuccessListener {
+            val updates = mutableMapOf<String, Any>()
+
+            // Step 2: Update Email
+            if (newEmail.isNotEmpty() && newEmail != user.email) {
+                user.updateEmail(newEmail).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        updates["email"] = newEmail
+                    } else {
+                        Toast.makeText(this, "Failed to update email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            // Step 3: Update Password
+            if (newPassword.isNotEmpty()) {
+                user.updatePassword(newPassword).addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Toast.makeText(this, "Failed to update password: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            // Step 4: Update Realtime Database (Name & Surname)
+            if (newName.isNotEmpty()) updates["firstName"] = newName
+            if (newSurname.isNotEmpty()) updates["lastName"] = newSurname
+
+            if (updates.isNotEmpty()) {
+                database.child(user.uid).updateChildren(updates)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Account updated successfully", Toast.LENGTH_SHORT).show()
+
+                        // 🔥 Update UI immediately
+                        if (newName.isNotEmpty()) {
+                            txtUserName.text = newName
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to update profile data", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(this, "Nothing to update", Toast.LENGTH_SHORT).show()
+            }
+
+        }.addOnFailureListener {
+            Toast.makeText(this, "Re-authentication failed. Wrong password?", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
         private const val sosHoldTime = 6000L  // 6 seconds in milliseconds
     }
+    private var notificationsEnabled = true
+    private lateinit var notificationRef: DatabaseReference
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
     private lateinit var txtUserName: TextView
     private lateinit var btnSos: Button
     private lateinit var txtLocation: TextView
+    private lateinit var notificationAdapter: NotificationAdapter
 
     private var isSosOn = false
     private var handler = Handler(Looper.getMainLooper())
@@ -71,44 +146,165 @@ class Home : AppCompatActivity() {
         txtLocation = findViewById(R.id.txtLocation)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        notificationRef = FirebaseDatabase.getInstance().getReference("notifications")
+
+        fun loadNotifications() {
+            if (!notificationsEnabled) {
+                notificationAdapter.updateNotifications(emptyList())
+                return
+            }
+
+            notificationRef.orderByKey().limitToLast(1)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val notificationList = mutableListOf<Notification>()
+                        for (child in snapshot.children) {
+                            val notif = child.getValue(Notification::class.java)
+                            if (notif != null) {
+                                notificationList.add(notif)
+                            }
+                        }
+                        notificationAdapter.updateNotifications(notificationList)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                    }
+                })
+        }
+
+
         val currentUserId = auth.currentUser?.uid
 
         // Load user's name
         if (currentUserId != null) {
-            database.child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
-                    txtUserName.text = if (firstName.isNotEmpty()) firstName.trim() else "Welcome!"
-                }
+            database.child(currentUserId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
+                        val displayName = firstName.trim()
+                        txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
+                    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT).show()
-                    txtUserName.text = "User"
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT).show()
+                        txtUserName.text = "User"
+                    }
+                })
         } else {
             txtUserName.text = "Guest"
         }
 
-        // Setup notifications
+        val profileButton: ImageButton = findViewById(R.id.profileButton)
+
+        profileButton.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menuInflater.inflate(R.menu.profile_menu, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_edit_account -> {
+                        val dialog = EditAccountDialog()
+                        dialog.show(supportFragmentManager, "EditAccountDialog")
+                        true
+                    }
+
+                    R.id.menu_notifications -> {
+                        notificationsEnabled = !notificationsEnabled
+
+                        if (!notificationsEnabled) {
+                            notificationAdapter.updateNotifications(emptyList())
+                            item.title = "Switch On Notifications"
+                            Toast.makeText(this, "Notifications switched off", Toast.LENGTH_SHORT).show()
+                        } else {
+                            loadNotifications()
+                            item.title = "Switch Off Notifications"
+                            Toast.makeText(this, "Notifications switched on", Toast.LENGTH_SHORT).show()
+                        }
+                        true
+                    }
+
+                    R.id.menu_logout -> {
+                        auth.signOut()
+                        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this,  MainActivity::class.java))
+                        finish()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popup.show()
+        }
+
+
+        // Setup notifications RecyclerView & adapter
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
-        recyclerNotifications.adapter = NotificationAdapter(listOf(
-            Notification("Report from NGO", "Shelter needed for family in Zone B", "10 min ago", "#00FF00")
-        ))
+        notificationAdapter = NotificationAdapter(mutableListOf())
+        recyclerNotifications.adapter = notificationAdapter
+
+        // ✅ Load latest notification from "notifications" node
+        val notificationRef = FirebaseDatabase.getInstance().getReference("notifications")
+        notificationRef.orderByKey().limitToLast(1)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val notificationList = mutableListOf<Notification>()
+                    for (child in snapshot.children) {
+                        val notif = child.getValue(Notification::class.java)
+                        if (notif != null) {
+                            notificationList.add(notif)
+                        }
+                    }
+                    notificationAdapter.updateNotifications(notificationList)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+        // 🔥 Load NGOs from Firebase
+        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
+
+        val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
+        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val ngoList = mutableListOf<Ngo>()
+                for (child in snapshot.children) {
+                    val ngo = child.getValue(Ngo::class.java)
+                    if (ngo != null) {
+                        ngoList.add(ngo)
+                    }
+                }
+                recyclerNgos.adapter = NgoAdapter(ngoList) { selectedNgo ->
+                    val intent = Intent(this@Home, HelpRequestsActivity::class.java)
+                    intent.putExtra("ngoName", selectedNgo.name)
+                    startActivity(intent)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
+            }
+        })
 
         // Setup resources
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
         recyclerResources.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerResources.adapter = ResourceAdapter(listOf(
-            Resource("Mental Health Tips", R.drawable.mentalhealth),
-            Resource("Legal Aid Info", R.drawable.legalaid),
-            Resource("Emergency Contacts", R.drawable.emergencycontact),
-            Resource("Self-Defense Tips", R.drawable.selfdefense),
-            Resource("Shelter Guidelines", R.drawable.shelter),
-            Resource("Safety Planning", R.drawable.safetyplanning)
-        )) { resource ->
-            when(resource.title) {
+        recyclerResources.adapter = ResourceAdapter(
+            listOf(
+                Resource("Mental Health Tips", R.drawable.mentalhealth),
+                Resource("Legal Aid Info", R.drawable.legalaid),
+                Resource("Emergency Contacts", R.drawable.emergencycontact),
+                Resource("Self-Defense Tips", R.drawable.selfdefense),
+                Resource("Shelter Guidelines", R.drawable.shelter),
+                Resource("Safety Planning", R.drawable.safetyplanning)
+            )
+        ) { resource ->
+            when (resource.title) {
                 "Mental Health Tips" -> showMentalHealthTipsDialog()
                 "Legal Aid Info" -> showLegalAidTipsDialog()
                 "Emergency Contacts" -> showEmergencyContactsTipsDialog()
@@ -119,29 +315,7 @@ class Home : AppCompatActivity() {
             }
         }
 
-        // 🔥 Load NGOs from Firebase
-        val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
-        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
-        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val ngoList = mutableListOf<Ngo>()
-                for (child in snapshot.children) {
-                    val ngo = child.getValue(Ngo::class.java)
-                    if (ngo != null) {
-                        ngoList.add(ngo)
-                    }
-                }
-                recyclerNgos.adapter = NgoAdapter(ngoList)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        // SOS Live Listener
+        // SOS Monitoring
         if (currentUserId != null) {
             val sosRef = database.child(currentUserId).child("sosActive")
             sosStatusListener = object : ValueEventListener {
@@ -173,10 +347,12 @@ class Home : AppCompatActivity() {
                     startSosHold()
                     true
                 }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     cancelSosHold()
                     true
                 }
+
                 else -> false
             }
         }
@@ -197,6 +373,8 @@ class Home : AppCompatActivity() {
     }
 
 
+
+
     private fun showMentalHealthTipsDialog() {
         val tips = """
         1. Take breaks and breathe deeply.
@@ -212,6 +390,7 @@ class Home : AppCompatActivity() {
             .setPositiveButton("Got it") { dialog, _ -> dialog.dismiss() }
             .show()
     }
+
     private fun showLegalAidTipsDialog() {
         val tips = """
         1. Know your rights—stay informed about local laws.
@@ -306,14 +485,16 @@ class Home : AppCompatActivity() {
     private fun maybeSaveLocationToFirebase(newLocation: Location) {
         val thresholdMeters = 50 // only save if moved more than 50 meters
 
-        val shouldSave = lastSavedLocation == null || lastSavedLocation!!.distanceTo(newLocation) > thresholdMeters
+        val shouldSave =
+            lastSavedLocation == null || lastSavedLocation!!.distanceTo(newLocation) > thresholdMeters
 
         if (shouldSave) {
             lastSavedLocation = newLocation
 
             val geocoder = Geocoder(this, Locale.getDefault())
             val addressString = try {
-                val addresses = geocoder.getFromLocation(newLocation.latitude, newLocation.longitude, 1)
+                val addresses =
+                    geocoder.getFromLocation(newLocation.latitude, newLocation.longitude, 1)
                 if (!addresses.isNullOrEmpty()) {
                     val address = addresses[0]
                     val suburb = address.subLocality ?: address.locality ?: "Unknown suburb"
@@ -346,11 +527,21 @@ class Home : AppCompatActivity() {
     }
 
     private fun hasLocationPermissions(): Boolean {
-        return (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        return (ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
@@ -363,11 +554,16 @@ class Home : AppCompatActivity() {
 
     @SuppressLint("MissingPermission") // Permissions are checked before calling
     private fun startLocationUpdates() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
-            .setMinUpdateIntervalMillis(3000)
-            .build()
+        val locationRequest =
+            LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, 5000)
+                .setMinUpdateIntervalMillis(3000)
+                .build()
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     private fun updateLocationText(location: Location) {
@@ -411,14 +607,15 @@ class Home : AppCompatActivity() {
     }
 
     private fun startSosHold() {
-        colorAnimator = ValueAnimator.ofObject(ArgbEvaluator(), Color.parseColor("#880000"), Color.RED).apply {
-            duration = sosHoldTime
-            addUpdateListener { animator ->
-                val color = animator.animatedValue as Int
-                btnSos.setBackgroundColor(color)
+        colorAnimator =
+            ValueAnimator.ofObject(ArgbEvaluator(), Color.parseColor("#880000"), Color.RED).apply {
+                duration = sosHoldTime
+                addUpdateListener { animator ->
+                    val color = animator.animatedValue as Int
+                    btnSos.setBackgroundColor(color)
+                }
+                start()
             }
-            start()
-        }
 
         sosRunnable = Runnable {
             activateSos()
@@ -438,62 +635,49 @@ class Home : AppCompatActivity() {
 
         val currentUserId = auth.currentUser?.uid
         if (currentUserId != null) {
-            // Explicitly check permissions before accessing location
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            database.child(currentUserId).child("sosActive").setValue(true)
+                .addOnSuccessListener {
+                    // Value successfully written
+                    database.child(currentUserId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists()) {
+                                    val userType =
+                                        snapshot.child("userType").getValue(String::class.java)
+                                            ?: ""
+                                    val fName =
+                                        snapshot.child("firstName").getValue(String::class.java)
+                                            ?: ""
+                                    val lName =
+                                        snapshot.child("lastName").getValue(String::class.java)
+                                            ?: ""
 
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val geocoder = Geocoder(this, Locale.getDefault())
-                        val addressString = try {
-                            val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                            if (!addresses.isNullOrEmpty()) {
-                                val address = addresses[0]
-                                val suburb = address.subLocality ?: address.locality ?: "Unknown suburb"
-                                val city = address.adminArea ?: "Unknown city"
-                                "$suburb, $city"
-                            } else {
-                                "Unknown location"
-                            }
-                        } catch (e: Exception) {
-                            "Unknown location"
-                        }
-
-                        val sosData = mapOf(
-                            "sosActive" to true,
-                            "latitude" to location.latitude,
-                            "longitude" to location.longitude,
-                            "address" to addressString,
-                            "triggeredAt" to System.currentTimeMillis()
-                        )
-
-                        database.child(currentUserId).updateChildren(sosData)
-                            .addOnSuccessListener {
+                                    ActivityLogger.log(
+                                        actorId = currentUserId,
+                                        actorType = userType,
+                                        category = "SOS Alert",
+                                        message = "User $fName $lName logged up successfully",
+                                        color = "#880808"
+                                    )
+                                }
                                 updateSosButtonUI()
                             }
-                            .addOnFailureListener {
-                                Toast.makeText(this, "Failed to activate SOS.", Toast.LENGTH_SHORT).show()
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Toast.makeText(
+                                    this@Home,
+                                    "Failed to read user data.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-
-                    } else {
-                        Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
-                    }
-                }.addOnFailureListener {
-                    Toast.makeText(this, "Failed to get location.", Toast.LENGTH_SHORT).show()
+                        })
                 }
-            } else {
-                Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(this@Home, "Failed to activate SOS.", Toast.LENGTH_SHORT)
+                        .show()
+                }
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show()
         }
-    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        val currentUserId = auth.currentUser?.uid
-        if (currentUserId != null && sosStatusListener != null) {
-            database.child(currentUserId).child("sosActive").removeEventListener(sosStatusListener!!)
-        }
-        fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 }

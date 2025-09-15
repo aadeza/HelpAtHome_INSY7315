@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.helpathome.adapters.AlertAdapter
 import com.example.helpathome.models.LastKnownLocation
 import com.example.helpathome.models.alerts
 import com.google.firebase.database.*
@@ -73,8 +72,7 @@ class LawDashboardActivity : AppCompatActivity() {
                     val alert = alerts(
                         userId = userId,
                         lastKnownLocation = lastLocation,
-                        sosActive = true,
-                        resolvedAt = null
+                        sosActive = true
                     )
                     alertList.add(alert)
                 }
@@ -103,15 +101,13 @@ class LawDashboardActivity : AppCompatActivity() {
 
                     val resolvedAt = userSnap.child("resolvedAt").getValue(Long::class.java)
                     if (resolvedAt == null) return@forEach
-
                     val lastLocation = userSnap.child("lastKnownLocation")
                         .getValue(LastKnownLocation::class.java)
 
                     val alert = alerts(
                         userId = userId,
                         lastKnownLocation = lastLocation,
-                        sosActive = false,
-                        resolvedAt = resolvedAt
+                        sosActive = false
                     )
                     resolvedAlertList.add(alert)
                 }
@@ -138,13 +134,10 @@ class LawDashboardActivity : AppCompatActivity() {
         syncTimeTextView.text = "Last synced at: $lastSync"
     }
 
+
     private fun markAsResolved(alert: alerts) {
         val userId = alert.userId ?: return
-        val updates = mapOf(
-            "sosActive" to false,
-            "resolvedAt" to System.currentTimeMillis()
-        )
-        usersRef.child(userId).updateChildren(updates)
+        usersRef.child(userId).child("sosActive").setValue(false)
             .addOnSuccessListener {
                 Toast.makeText(this, "Alert marked as resolved", Toast.LENGTH_SHORT).show()
             }
@@ -163,4 +156,8 @@ class LawDashboardActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to delete alert", Toast.LENGTH_SHORT).show()
             }
     }
+
 }
+
+
+

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/adminDashboardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/homebackground"
+    tools:context=".AdminDashboard">
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="12dp">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/helphomeicon"
+                    android:contentDescription="Logo" />
+
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Logged in as"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="12dp"
+                    android:textColor="#1E88E5" />
+            </LinearLayout>
+
+            <!-- Notifications Section -->
+            <LinearLayout
+                android:id="@+id/notificationsSection"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/box_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/systemActivitiesTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="System Activity Alerts"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerSystemActivities"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    tools:listitem="@layout/item_sysactivity" />
+            </LinearLayout>
+
+            <!-- NGOs Section -->
+            <LinearLayout
+                android:id="@+id/ngoSection"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/box_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/ngosTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Approve NGO profiles"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerProfiles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_ngoprofiles" />
+            </LinearLayout>
+
+            <!-- Users Section -->
+            <LinearLayout
+                android:id="@+id/resourcesSection"
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/box_background"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/resourcesTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Suspend or Remove Users"
+                    android:textColor="#000000"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerManageUsers"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:overScrollMode="never"
+                    tools:listitem="@layout/item_users" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_stats"
+        android:contentDescription="View Stats"
+        app:backgroundTint="@color/colorPrimary"
+        app:tint="@android:color/white"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

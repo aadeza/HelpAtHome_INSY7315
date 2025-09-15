@@ -44,7 +44,15 @@
             android:textSize="13sp"
             android:layout_marginTop="2dp" />
 
-
+        <!-- Status -->
+        <TextView
+            android:id="@+id/textStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Unresolved"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp" />
 
         <!-- Buttons: Resolve + Delete -->
         <LinearLayout

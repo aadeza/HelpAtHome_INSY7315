@@ -17,6 +17,7 @@ firebaseAuthKtx = "23.2.1"
 firebaseDatabaseKtx = "20.3.1"
 googleServicesPlugin = "4.4.3"
 playServicesLocation = "21.3.0"
+chart = "3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -41,6 +42,7 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref ="chart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
