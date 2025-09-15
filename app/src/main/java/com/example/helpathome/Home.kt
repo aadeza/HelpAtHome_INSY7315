@@ -16,6 +16,8 @@ import android.os.Looper
 import android.text.format.DateUtils
 import android.view.MotionEvent
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -26,16 +28,54 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.util.*
 
-class Home : AppCompatActivity() {
+class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
+
+    override fun onSaveClicked(
+        currentPass: String,
+        newName: String,
+        newSurname: String,
+        newEmail: String,
+        newPassword: String
+    ) {
+        val user = auth.currentUser
+        val credential = EmailAuthProvider.getCredential(user?.email!!, currentPass)
+
+        user.reauthenticate(credential).addOnSuccessListener {
+            // ✅ Update email
+            if (newEmail.isNotEmpty()) user.updateEmail(newEmail)
+
+            // ✅ Update password
+            if (newPassword.isNotEmpty()) user.updatePassword(newPassword)
+
+            // ✅ Update Realtime Database
+            val userMap = mutableMapOf<String, Any>()
+            if (newName.isNotEmpty()) userMap["firstName"] = newName
+            if (newSurname.isNotEmpty()) userMap["lastName"] = newSurname
+            if (newEmail.isNotEmpty()) userMap["email"] = newEmail
+
+            if (userMap.isNotEmpty()) {
+                database.child(user.uid).updateChildren(userMap)
+            }
+
+            Toast.makeText(this, "Account updated", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Re-authentication failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
         private const val sosHoldTime = 6000L  // 6 seconds in milliseconds
     }
+    private var notificationsEnabled = true
+    private lateinit var notificationRef: DatabaseReference
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
@@ -73,6 +113,34 @@ class Home : AppCompatActivity() {
         txtLocation = findViewById(R.id.txtLocation)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        notificationRef = FirebaseDatabase.getInstance().getReference("notifications")
+
+        fun loadNotifications() {
+            if (!notificationsEnabled) {
+                notificationAdapter.updateNotifications(emptyList())
+                return
+            }
+
+            notificationRef.orderByKey().limitToLast(1)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val notificationList = mutableListOf<Notification>()
+                        for (child in snapshot.children) {
+                            val notif = child.getValue(Notification::class.java)
+                            if (notif != null) {
+                                notificationList.add(notif)
+                            }
+                        }
+                        notificationAdapter.updateNotifications(notificationList)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                    }
+                })
+        }
+
+
         val currentUserId = auth.currentUser?.uid
 
         // Load user's name
@@ -94,8 +162,51 @@ class Home : AppCompatActivity() {
             txtUserName.text = "Guest"
         }
 
+        val profileButton: ImageButton = findViewById(R.id.profileButton)
+
+        profileButton.setOnClickListener { view ->
+            val popup = PopupMenu(this, view)
+            popup.menuInflater.inflate(R.menu.profile_menu, popup.menu)
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.menu_edit_account -> {
+                        val dialog = EditAccountDialog()
+                        dialog.show(supportFragmentManager, "EditAccountDialog")
+                        true
+                    }
+
+                    R.id.menu_notifications -> {
+                        notificationsEnabled = !notificationsEnabled
+
+                        if (!notificationsEnabled) {
+                            notificationAdapter.updateNotifications(emptyList())
+                            item.title = "Switch On Notifications"
+                            Toast.makeText(this, "Notifications switched off", Toast.LENGTH_SHORT).show()
+                        } else {
+                            loadNotifications()
+                            item.title = "Switch Off Notifications"
+                            Toast.makeText(this, "Notifications switched on", Toast.LENGTH_SHORT).show()
+                        }
+                        true
+                    }
+
+                    R.id.menu_logout -> {
+                        auth.signOut()
+                        Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this,  MainActivity::class.java))
+                        finish()
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popup.show()
+        }
 
 
+        // Setup notifications RecyclerView & adapter
         val recyclerNotifications = findViewById<RecyclerView>(R.id.recyclerNotifications)
         recyclerNotifications.layoutManager = LinearLayoutManager(this)
         notificationAdapter = NotificationAdapter(mutableListOf())
@@ -512,7 +623,7 @@ class Home : AppCompatActivity() {
                                         actorId = currentUserId,
                                         actorType = userType,
                                         category = "SOS Alert",
-                                        message = "User $fName $lName triggered the SOS button",
+                                        message = "User $fName $lName logged up successfully",
                                         color = "#880808"
                                     )
                                 }
