@@ -1,7 +1,6 @@
 package com.example.helpathome
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,7 @@ class NGOModel : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var txtUserName: TextView
     private lateinit var txtResults: TextView
+    private lateinit var txtStats: TextView
     private lateinit var db: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +24,7 @@ class NGOModel : AppCompatActivity() {
 
         txtUserName = findViewById(R.id.txtUserName)
         txtResults = findViewById(R.id.txtViewResults)
+        txtStats = findViewById(R.id.txtStats)
 
         val currentUser = auth.currentUser
         txtUserName.text = currentUser?.email ?: "NGO User"
@@ -81,18 +82,12 @@ class NGOModel : AppCompatActivity() {
             }
         }
 
-        // ✅ View Help Requests
+        // ✅ View Help Requests (from Firebase)
         btnHelpRequests.setOnClickListener {
-            val helpRequests = """
-                📥 Help Requests:
-                • Zone A: Family needs food
-                • Zone B: Legal aid needed
-                • Zone C: Shelter request for 3 people
-            """.trimIndent()
-            txtResults.text = helpRequests
+            loadHelpRequests()
         }
 
-        // ✅ Call user → new screen (we'll build it later)
+        // ✅ Call user → new screen
         btnCallUser.setOnClickListener {
             val intent = Intent(this, CallUsersActivity::class.java)
             startActivity(intent)
@@ -100,18 +95,22 @@ class NGOModel : AppCompatActivity() {
 
         loadNGOData()
         loadUpdates()
+        loadHelpRequests()
     }
 
-    // Load NGO entries
+    // Load NGO entries + show count
     private fun loadNGOData() {
         db.child("NGOs").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
-            builder.append("📌 NGOs Registered:\n")
+            builder.append("📌 NGOs Registered (${snapshot.childrenCount}):\n")
             snapshot.children.forEach {
-                val data = it.value as Map<*, *>
-                builder.append("• ${data["name"]} (${data["category"]})\n")
+                val data = it.value as? Map<*, *>
+                if (data != null) {
+                    builder.append("• ${data["name"]} (${data["category"]})\n")
+                }
             }
             txtResults.text = builder.toString()
+            txtStats.text = "📊 Total NGOs: ${snapshot.childrenCount}"
         }
     }
 
@@ -121,10 +120,28 @@ class NGOModel : AppCompatActivity() {
             val builder = StringBuilder()
             builder.append("\n📢 Recent Updates:\n")
             snapshot.children.forEach {
-                val data = it.value as Map<*, *>
-                builder.append("• ${data["message"]}\n")
+                val data = it.value as? Map<*, *>
+                if (data != null) {
+                    builder.append("• ${data["message"]}\n")
+                }
             }
             txtResults.append(builder.toString())
+        }
+    }
+
+    // ✅ Load Help Requests from Firebase + show count
+    private fun loadHelpRequests() {
+        db.child("HelpRequests").get().addOnSuccessListener { snapshot ->
+            val builder = StringBuilder()
+            builder.append("📥 Help Requests (${snapshot.childrenCount}):\n")
+            snapshot.children.forEach {
+                val data = it.value as? Map<*, *>
+                if (data != null) {
+                    builder.append("• ${data["description"]} (From: ${data["user"]})\n")
+                }
+            }
+            txtResults.text = builder.toString()
+            txtStats.text = "📊 Total Help Requests: ${snapshot.childrenCount}"
         }
     }
 }
