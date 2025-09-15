@@ -43,30 +43,63 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
         newPassword: String
     ) {
         val user = auth.currentUser
-        val credential = EmailAuthProvider.getCredential(user?.email!!, currentPass)
+        if (user == null) {
+            Toast.makeText(this, "No logged-in user", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        val credential = EmailAuthProvider.getCredential(user.email!!, currentPass)
+
+        // Step 1: Reauthenticate
         user.reauthenticate(credential).addOnSuccessListener {
-            // ✅ Update email
-            if (newEmail.isNotEmpty()) user.updateEmail(newEmail)
+            val updates = mutableMapOf<String, Any>()
 
-            // ✅ Update password
-            if (newPassword.isNotEmpty()) user.updatePassword(newPassword)
-
-            // ✅ Update Realtime Database
-            val userMap = mutableMapOf<String, Any>()
-            if (newName.isNotEmpty()) userMap["firstName"] = newName
-            if (newSurname.isNotEmpty()) userMap["lastName"] = newSurname
-            if (newEmail.isNotEmpty()) userMap["email"] = newEmail
-
-            if (userMap.isNotEmpty()) {
-                database.child(user.uid).updateChildren(userMap)
+            // Step 2: Update Email
+            if (newEmail.isNotEmpty() && newEmail != user.email) {
+                user.updateEmail(newEmail).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        updates["email"] = newEmail
+                    } else {
+                        Toast.makeText(this, "Failed to update email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
-            Toast.makeText(this, "Account updated", Toast.LENGTH_SHORT).show()
+            // Step 3: Update Password
+            if (newPassword.isNotEmpty()) {
+                user.updatePassword(newPassword).addOnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Toast.makeText(this, "Failed to update password: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            // Step 4: Update Realtime Database (Name & Surname)
+            if (newName.isNotEmpty()) updates["firstName"] = newName
+            if (newSurname.isNotEmpty()) updates["lastName"] = newSurname
+
+            if (updates.isNotEmpty()) {
+                database.child(user.uid).updateChildren(updates)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Account updated successfully", Toast.LENGTH_SHORT).show()
+
+                        // 🔥 Update UI immediately
+                        if (newName.isNotEmpty()) {
+                            txtUserName.text = newName
+                        }
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Failed to update profile data", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(this, "Nothing to update", Toast.LENGTH_SHORT).show()
+            }
+
         }.addOnFailureListener {
-            Toast.makeText(this, "Re-authentication failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Re-authentication failed. Wrong password?", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 
