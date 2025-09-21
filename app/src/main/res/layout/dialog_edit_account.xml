@@ -8,32 +8,32 @@
         android:id="@+id/etCurrentPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Current Password"
+        android:hint="@string/current_password"
         android:inputType="textPassword" />
 
     <EditText
         android:id="@+id/etNewName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="New Name" />
+        android:hint="@string/new_name" />
 
     <EditText
         android:id="@+id/etNewSurname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="New Surname" />
+        android:hint="@string/new_surname" />
 
     <EditText
         android:id="@+id/etNewEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="New Email"
+        android:hint="@string/new_email"
         android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/etNewPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="New Password"
+        android:hint="@string/new_password"
         android:inputType="textPassword" />
 </LinearLayout>

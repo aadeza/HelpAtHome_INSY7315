@@ -35,7 +35,7 @@ class HelpRequestsActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tvStatus)
 
         val ngoName = intent.getStringExtra("ngoName") ?: "Unknown NGO"
-        tvNgoName.text = "Requesting Help from: $ngoName"
+        tvNgoName.text = getString(R.string.requesting_help_from, ngoName)
 
         btnSendRequest.setOnClickListener {
             val message = etHelpMessage.text.toString().trim()
@@ -75,7 +75,7 @@ class HelpRequestsActivity : AppCompatActivity() {
                         .addOnSuccessListener {
                             tvStatus.visibility = View.VISIBLE
                             tvStatus.setTextColor(resources.getColor(android.R.color.holo_green_dark))
-                            tvStatus.text = "✅ Request sent successfully!"
+                            tvStatus.text = getString(R.string.request_sent_successfully)
                             etHelpMessage.text.clear()
 
                             ActivityLogger.log(
@@ -89,7 +89,7 @@ class HelpRequestsActivity : AppCompatActivity() {
                         .addOnFailureListener {
                             tvStatus.visibility = View.VISIBLE
                             tvStatus.setTextColor(resources.getColor(android.R.color.holo_red_dark))
-                            tvStatus.text = "❌ Failed to send request: ${it.message}"
+                            tvStatus.text = getString(R.string.failed_to_send_request, it.message)
                         }
                 }
 

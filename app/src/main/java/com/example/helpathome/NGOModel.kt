@@ -144,7 +144,7 @@ class NGOModel : AppCompatActivity() {
         btnHelpRequests.setOnClickListener {
             db.child("help_requests").get().addOnSuccessListener { snapshot ->
                 if (!snapshot.hasChildren()) {
-                    txtResults.text = "📥 No help requests found."
+                    txtResults.text = getString(R.string.no_help_requests_found)
                     return@addOnSuccessListener
                 }
 
@@ -153,7 +153,7 @@ class NGOModel : AppCompatActivity() {
                 val totalRequests = requests.size
                 var processed = 0
 
-                txtResults.text = "Loading help requests..."
+                txtResults.text = getString(R.string.loading_help_requests)
 
                 for (request in requests) {
                     val requestData = request.value as Map<*, *>

@@ -1,5 +1,6 @@
 package com.example.helpathome.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class AlertAdapter(
 
     override fun getItemCount(): Int = alertList.size
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alertList[position]
         holder.textUserId.text = "User ID: ${alert.userId}"

@@ -35,7 +35,7 @@
             android:layout_gravity="center_horizontal"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="Help@Home"
+            android:text="@string/help_home"
             android:textColor="#63C1FF"
             android:textSize="36sp"
             android:textStyle="bold"
@@ -63,7 +63,7 @@
                 android:layout_width="34dp"
                 android:layout_height="23dp"
                 android:background="@android:color/transparent"
-                android:contentDescription="Profile"
+                android:contentDescription="@string/profile"
                 android:scaleType="fitCenter"
                 android:src="@drawable/profileiconn" />
         </LinearLayout>
@@ -83,13 +83,13 @@
                 android:layout_height="20dp"
                 android:layout_marginEnd="8dp"
                 android:src="@drawable/locationiconn"
-                android:contentDescription="Location Icon" />
+                android:contentDescription="@string/location_icon" />
 
             <TextView
                 android:id="@+id/txtLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fetching location..."
+                android:text="@string/fetching_location"
                 android:textColor="#000000"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -113,7 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Notifications"
+                android:text="@string/notifications"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -140,7 +140,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Browse NGOs"
+                android:text="@string/browse_ngos"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -168,7 +168,7 @@
                 android:id="@+id/resourcesTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Resources"
+                android:text="@string/resources"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -189,7 +189,7 @@
             android:id="@+id/btnSos"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:text="HOLD FOR SOS"
+            android:text="@string/hold_for_sos"
             android:textColor="#FFFFFF"
             android:backgroundTint="#880000"
             android:textStyle="bold"
