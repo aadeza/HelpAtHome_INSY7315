@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
+
                         val userId = auth.currentUser?.uid
                         if (userId != null) {
                             // Read the user data from the database
@@ -172,6 +173,11 @@ class MainActivity : ComponentActivity() {
                                 Toast.LENGTH_LONG
                             ).show()
                         }
+
+                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, NGOModel::class.java))
+                        finish()
+
                     } else {
                         Toast.makeText(
                             this@MainActivity,
