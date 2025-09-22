@@ -218,6 +218,7 @@ class NGOModel : AppCompatActivity() {
 
         loadNGOData()
             loadUpdates()
+        loadHelpRequests()
         }
 
 
