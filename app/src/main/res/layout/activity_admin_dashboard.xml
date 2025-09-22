@@ -49,7 +49,7 @@
             <LinearLayout
                 android:id="@+id/notificationsSection"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="220dp"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/box_background"
                 android:orientation="vertical"
@@ -69,8 +69,8 @@
                     android:id="@+id/recyclerSystemActivities"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:orientation="horizontal"
                     android:clipToPadding="false"
+                    android:orientation="horizontal"
                     android:overScrollMode="never"
                     tools:listitem="@layout/item_sysactivity" />
             </LinearLayout>

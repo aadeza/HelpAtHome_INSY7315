@@ -33,6 +33,17 @@ class EditAccountDialog : DialogFragment() {
                     (activity as? OnEditAccountListener)?.onSaveClicked(
                         currentPass, name, surname, email, password
                     )
+
+                    ActivityLogger.log(
+                        actorId = email,
+                        actorType = "Civilian",
+                        category = "Credentials Change",
+                        message = "User $name $surname changed their account credentials",
+                        color = "#FF5900"
+                    )
+
+
+
                 } else {
                     Toast.makeText(context, "Enter current password", Toast.LENGTH_SHORT).show()
                 }

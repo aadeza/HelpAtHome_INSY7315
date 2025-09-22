@@ -82,14 +82,14 @@ class NGOModel : AppCompatActivity() {
             }
         }
 
-        // ✅ View Help Requests (from Firebase)
+
         btnHelpRequests.setOnClickListener {
             loadHelpRequests()
         }
 
-        // ✅ Call user → new screen
+
         btnCallUser.setOnClickListener {
-            val intent = Intent(this, CallUsersActivity::class.java)
+            val intent = Intent(this, CallUserActivity::class.java)
             startActivity(intent)
         }
 
@@ -98,7 +98,7 @@ class NGOModel : AppCompatActivity() {
         loadHelpRequests()
     }
 
-    // Load NGO entries + show count
+
     private fun loadNGOData() {
         db.child("NGOs").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
@@ -114,7 +114,7 @@ class NGOModel : AppCompatActivity() {
         }
     }
 
-    // Load update posts
+
     private fun loadUpdates() {
         db.child("NGOUpdates").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
@@ -129,15 +129,15 @@ class NGOModel : AppCompatActivity() {
         }
     }
 
-    // ✅ Load Help Requests from Firebase + show count
+
     private fun loadHelpRequests() {
-        db.child("HelpRequests").get().addOnSuccessListener { snapshot ->
+        db.child("help_requests").get().addOnSuccessListener { snapshot ->
             val builder = StringBuilder()
             builder.append("📥 Help Requests (${snapshot.childrenCount}):\n")
             snapshot.children.forEach {
                 val data = it.value as? Map<*, *>
                 if (data != null) {
-                    builder.append("• ${data["description"]} (From: ${data["user"]})\n")
+                    builder.append("• ${data["message"]} (From: ${data["userName"]})\n")
                 }
             }
             txtResults.text = builder.toString()

@@ -53,7 +53,7 @@ class HelpRequestsActivity : AppCompatActivity() {
             val userId = currentUser.uid
             val userRef = database.getReference("Users").child(userId)
 
-            // Fetch user info (name, surname) before sending request
+
             userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val firstName = snapshot.child("firstName").getValue(String::class.java) ?: "Unknown"

@@ -38,7 +38,7 @@
         android:text="Save Contact"
         android:layout_marginBottom="16dp" />
 
-    <!-- Contact List -->
+
     <ListView
         android:id="@+id/userListView"
         android:layout_width="match_parent"

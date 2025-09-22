@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         val loginButton = findViewById<Button>(R.id.Loginbutton)
         val signUpText = findViewById<TextView>(R.id.ToSignUptextView)
 
-        // Underline "Sign Up" text
+
         signUpText.paintFlags = signUpText.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         signUpText.setOnClickListener {
             startActivity(Intent(this, SignUp::class.java))
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString()
 
-            // Input validation
+
             if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 emailField.error = "Enter a valid email"
                 return@setOnClickListener
@@ -49,19 +49,19 @@ class MainActivity : ComponentActivity() {
                 return@setOnClickListener
             }
 
-            // Sign in with Firebase Auth
+
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-
                         val userId = auth.currentUser?.uid
+
                         if (userId != null) {
-                            // Read the user data from the database
                             database.child(userId)
                                 .addListenerForSingleValueEvent(object : ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
                                         if (snapshot.exists()) {
-                                            // ✅ Check accountStatus before proceeding
+
+
                                             val accountStatus = snapshot.child("accountStatus")
                                                 .getValue(String::class.java) ?: "active"
 
@@ -85,24 +85,21 @@ class MainActivity : ComponentActivity() {
                                                     ).show()
                                                     return
                                                 }
-                                                // If active, continue below
                                             }
 
-                                            val userType =
-                                                snapshot.child("userType")
-                                                    .getValue(String::class.java) ?: ""
-                                            val fName =
-                                                snapshot.child("firstName")
-                                                    .getValue(String::class.java) ?: ""
-                                            val lName =
-                                                snapshot.child("lastName")
-                                                    .getValue(String::class.java) ?: ""
+                                            val userType = snapshot.child("userType")
+                                                .getValue(String::class.java) ?: ""
+                                            val fName = snapshot.child("firstName")
+                                                .getValue(String::class.java) ?: ""
+                                            val lName = snapshot.child("lastName")
+                                                .getValue(String::class.java) ?: ""
 
                                             Toast.makeText(
                                                 this@MainActivity,
                                                 "Welcome $fName $lName",
                                                 Toast.LENGTH_SHORT
                                             ).show()
+
 
                                             ActivityLogger.log(
                                                 actorId = userId,
@@ -112,7 +109,6 @@ class MainActivity : ComponentActivity() {
                                                 color = "#4CAF50"
                                             )
 
-                                            // Redirect based on userType
                                             when (userType) {
                                                 "Admin" -> startActivity(
                                                     Intent(
@@ -144,10 +140,11 @@ class MainActivity : ComponentActivity() {
 
                                                 else -> Toast.makeText(
                                                     this@MainActivity,
-                                                    "User data not found in database!",
+                                                    "User type not recognized!",
                                                     Toast.LENGTH_LONG
                                                 ).show()
                                             }
+
                                             finish()
                                         } else {
                                             Toast.makeText(
@@ -174,18 +171,68 @@ class MainActivity : ComponentActivity() {
                             ).show()
                         }
 
-                        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, NGOModel::class.java))
-                        finish()
-
                     } else {
+
                         Toast.makeText(
                             this@MainActivity,
                             "Login failed: ${task.exception?.message}",
                             Toast.LENGTH_LONG
                         ).show()
-                    }
+
+
+                        val attemptedEmail = email
+                        ActivityLogger.log(
+                            actorId = attemptedEmail,
+                            actorType = "Unknown",
+                            category = "Login Failed",
+                            message = "Login attempt failed for email: $attemptedEmail. Reason: ${task.exception?.message}",
+                            color = "#F44336"
+                        )
+
+                        val userId = auth.currentUser?.uid
+                        if (userId != null) {
+                            val userRef = database.child(userId).child("failedLoginAttempts")
+                            userRef.runTransaction(object : Transaction.Handler {
+                                override fun doTransaction(currentData: MutableData): Transaction.Result {
+                                    var count = currentData.getValue(Int::class.java) ?: 0
+                                    count++
+                                    currentData.value = count
+                                    return Transaction.success(currentData)
+                                }
+
+                                override fun onComplete(
+                                    error: DatabaseError?,
+                                    committed: Boolean,
+                                    currentData: DataSnapshot?
+                                ) {
+                                    if (committed) {
+                                        val attempts = currentData?.getValue(Int::class.java) ?: 0
+                                        if (attempts >= 5) {
+                                            database.child(userId).child("accountStatus").setValue("suspended")
+
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                "Too many failed attempts. Account suspended.",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+
+                                            ActivityLogger.log(
+                                                actorId = attemptedEmail,
+                                                actorType = "Unknown",
+                                                category = "Multiple Failed Attempts",
+                                                message = "User $attemptedEmail has attempted to log in $attempts times ",
+                                                color = "#F44336"
+                                            )
+                                        }
+                                    }
+                                }
+                            })
+                            }
+                        }
                 }
+
         }
+
     }
 }
+

@@ -17,7 +17,7 @@ class CallUserActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_call_user)
 
-        // Initialize Firebase
+
         dbRef = FirebaseDatabase.getInstance().getReference("Contacts")
 
         // UI Elements
@@ -40,6 +40,14 @@ class CallUserActivity : AppCompatActivity() {
                     Toast.makeText(this, "✅ Contact Saved", Toast.LENGTH_SHORT).show()
                     editName.text.clear()
                     editPhone.text.clear()
+
+                    listView.setOnItemClickListener { _, _, position, _ ->
+                        val intent = Intent(Intent.ACTION_DIAL)
+                        intent.data = Uri.parse("tel: $phone")
+                        startActivity(intent)
+                    }
+
+
                 }.addOnFailureListener {
                     Toast.makeText(this, "❌ Failed to save contact", Toast.LENGTH_SHORT).show()
                 }
@@ -65,15 +73,12 @@ class CallUserActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@CallUserActivity, "Failed to load contacts", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@CallUserActivity, "Failed to load contacts", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
 
-        // 📞 Handle call click
-        listView.setOnItemClickListener { _, _, position, _ ->
-            val phone = contactList[position].second
-            val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
-            startActivity(intent)
-        }
+
     }
+
 }
