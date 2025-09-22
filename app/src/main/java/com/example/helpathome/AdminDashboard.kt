@@ -88,11 +88,11 @@ class AdminDashboard : AppCompatActivity() {
                     override fun onCancelled(error: DatabaseError) {
                         Log.e("AdminDashboard", "Failed to load user info", error.toException())
                         Toast.makeText(this@AdminDashboard, "Failed to load user info", Toast.LENGTH_SHORT).show()
-                        txtUserName.text = "User"
+                        txtUserName.text = getString(R.string.user)
                     }
                 })
         } else {
-            txtUserName.text = "Guest"
+            txtUserName.text = getString(R.string.guest)
         }
     }
 

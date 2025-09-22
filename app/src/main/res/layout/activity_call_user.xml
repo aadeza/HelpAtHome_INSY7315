@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Call a User"
+        android:text="@string/call_a_user"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_marginBottom="12dp"/>
@@ -19,14 +19,14 @@
         android:id="@+id/editContactName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Name"
+        android:hint="@string/enter_name"
         android:layout_marginBottom="8dp" />
 
     <EditText
         android:id="@+id/editContactPhone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter Phone Number"
+        android:hint="@string/enter_phone_number"
         android:inputType="phone"
         android:layout_marginBottom="8dp" />
 
@@ -35,7 +35,7 @@
         android:id="@+id/btnSaveContact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save Contact"
+        android:text="@string/save_contact"
         android:layout_marginBottom="16dp" />
 
 

@@ -23,13 +23,13 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/helphomeicon"
-                android:contentDescription="Logo" />
+                android:contentDescription="@string/logoo" />
 
             <TextView
                 android:id="@+id/txtUserName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Logged in as"
+                android:text="@string/logged_in_as"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
@@ -81,7 +81,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Create NGO"
+                    android:text="@string/create_ngo"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#1E88E5" />
@@ -90,14 +90,14 @@
                     android:id="@+id/editName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="NGO Name"
+                    android:hint="@string/ngo_name"
                     android:layout_marginTop="8dp" />
 
                 <EditText
                     android:id="@+id/editFounder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Founder Name"
+                    android:hint="@string/founder_name"
                     android:layout_marginTop="8dp" />
 
                 <Spinner
@@ -110,14 +110,14 @@
                     android:id="@+id/editDateFounded"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Date Founded (YYYY-MM-DD)"
+                    android:hint="@string/date_founded_yyyy_mm_dd"
                     android:layout_marginTop="8dp" />
 
                 <Button
                     android:id="@+id/btnCreateNGO"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Create NGO"
+                    android:text="@string/create_ngo"
                     android:backgroundTint="#1E88E5"
                     android:textColor="#FFFFFF"
                     android:layout_marginTop="12dp" />
@@ -142,7 +142,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Post an Update"
+                    android:text="@string/post_an_update"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#43A047" />
@@ -151,7 +151,7 @@
                     android:id="@+id/editPostMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter update (max 50 words)"
+                    android:hint="@string/enter_update_max_50_words"
                     android:layout_marginTop="8dp"
                     android:maxLines="3" />
 
@@ -159,7 +159,7 @@
                     android:id="@+id/btnPostUpdate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Post"
+                    android:text="@string/post"
                     android:backgroundTint="#43A047"
                     android:textColor="#FFFFFF"
                     android:layout_marginTop="12dp" />
@@ -184,7 +184,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Quick Actions"
+                    android:text="@string/quick_actions"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="#D32F2F" />
@@ -193,7 +193,7 @@
                     android:id="@+id/btnHelpRequests"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="View Help Requests"
+                    android:text="@string/view_help_requests"
                     android:backgroundTint="#FFC107"
                     android:textColor="#000000"
                     android:layout_marginTop="12dp" />
@@ -216,7 +216,7 @@
             android:id="@+id/txtViewResults"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Your NGO information will appear here."
+            android:text="@string/your_ngo_information_will_appear_here"
             android:padding="16dp"
             android:textSize="14sp"
             android:background="#EEEEEE"

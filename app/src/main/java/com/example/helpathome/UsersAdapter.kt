@@ -1,5 +1,6 @@
 package com.example.helpathome
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ class UsersAdapter(
         return UsersViewHolder(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: UsersViewHolder, position: Int) {
         val user = users[position]
         holder.username.text = "${user.name} ${user.lastName}"

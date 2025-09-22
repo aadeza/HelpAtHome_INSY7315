@@ -585,23 +585,23 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                     "($minutesAgo mins ago)"
                 }
 
-                txtLocation.text = "$suburb, $city $timeString"
+                txtLocation.text = getString(R.string.sub_city_time, suburb, city, timeString)
             } else {
-                txtLocation.text = "Location unavailable"
+                txtLocation.text = getString(R.string.location_unavailable)
             }
         } catch (e: Exception) {
-            txtLocation.text = "Location error"
+            txtLocation.text = getString(R.string.location_error)
         }
     }
 
     private fun updateSosButtonUI() {
         if (isSosOn) {
             btnSos.setBackgroundColor(Color.RED)
-            btnSos.text = "SOS ON"
+            btnSos.text = getString(R.string.sos_on)
             btnSos.isEnabled = false
         } else {
             btnSos.setBackgroundColor(Color.parseColor("#880000")) // dim red
-            btnSos.text = "HOLD FOR SOS"
+            btnSos.text = getString(R.string.hold_for_sos_)
             btnSos.isEnabled = true
         }
     }

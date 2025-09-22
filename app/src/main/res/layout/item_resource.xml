@@ -22,14 +22,14 @@
             android:layout_height="64dp"
             android:layout_marginBottom="12dp"
             android:src="@drawable/ic_launcher_foreground"
-            android:contentDescription="Resource Image" />
+            android:contentDescription="@string/resource_image" />
 
         <!-- Resource Title -->
         <TextView
             android:id="@+id/resourceTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mental Health"
+            android:text="@string/mental_health"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="#000000"

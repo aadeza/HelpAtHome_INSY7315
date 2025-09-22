@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
@@ -18,7 +19,7 @@
             android:id="@+id/textTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Statistics"
+            android:text="@string/statistics"
             android:textColor="#63C1FF"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -55,7 +56,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active Users"
+                android:text="@string/active_users"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:layout_marginTop="8dp"
@@ -65,7 +66,7 @@
                 android:id="@+id/numActiveUsers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="6"
+                android:text="@string/_6"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -87,7 +88,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Suspended Users"
+                    android:text="@string/suspended_users"
                     android:textSize="16sp"
                     android:textColor="@color/black"
                     android:layout_marginTop="8dp"
@@ -98,7 +99,7 @@
                     android:id="@+id/numSuspendedUsers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6"
+                    android:text="@string/_6"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -120,7 +121,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pending Approvals"
+                    android:text="@string/pending_approvals"
                     android:textSize="15sp"
                     android:textColor="@color/black"
                     android:layout_marginTop="8dp"
@@ -132,7 +133,7 @@
                     android:id="@+id/numPending"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6"
+                    android:text="@string/_6"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -153,7 +154,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Approved NGOs"
+                    android:text="@string/approved_ngos"
                     android:textSize="16sp"
                     android:textColor="@color/black"
                     android:layout_marginTop="8dp"
@@ -164,7 +165,7 @@
                     android:id="@+id/numApproved"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6"
+                    android:text="@string/_6"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -192,13 +193,14 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="15sp"
-            android:text="Panic Alerts Overview"/>
+            android:text="@string/panic_alerts_overview"/>
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barChart"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp"
+            tools:ignore="MissingClass" />
 
 
 
@@ -220,13 +222,14 @@
             android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="15sp"
-            android:text="NGO category overview"/>
+            android:text="@string/ngo_category_overview"/>
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pieChartCategories"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp"
+            tools:ignore="MissingClass" />
 
     </LinearLayout>
 

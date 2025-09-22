@@ -21,7 +21,7 @@ class CallUsersActivity : AppCompatActivity() {
 
         for ((name, number) in userList) {
             val text = TextView(this)
-            text.text = "📞 $name ($number)"
+            text.text = getString(R.string.name_number, name, number)
             text.textSize = 18f
             text.setOnClickListener {
                 val intent = Intent(Intent.ACTION_DIAL)

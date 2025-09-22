@@ -32,13 +32,13 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/helphomeicon"
-                    android:contentDescription="Logo" />
+                    android:contentDescription="@string/logo" />
 
                 <TextView
                     android:id="@+id/txtUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Logged in as"
+                    android:text="@string/logged_in_as"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginStart="12dp"
@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="System Activity Alerts"
+                    android:text="@string/system_activity_alerts"
                     android:textColor="#000000"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Approve NGO profiles"
+                    android:text="@string/approve_ngo_profiles"
                     android:textColor="#000000"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -120,7 +120,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="Suspend or Remove Users"
+                    android:text="@string/suspend_or_remove_users"
                     android:textColor="#000000"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -145,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_stats"
-        android:contentDescription="View Stats"
+        android:contentDescription="@string/view_stats"
         app:backgroundTint="@color/colorPrimary"
         app:tint="@android:color/white"
         android:layout_gravity="bottom|end"
