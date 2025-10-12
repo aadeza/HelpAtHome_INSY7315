@@ -106,6 +106,9 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
         private const val sosHoldTime = 6000L  // 6 seconds in milliseconds
+        // Caching user data
+        private var cachedUserName: String? = null
+        private var cachedNgoList: List<Ngo>? = null
     }
     private var notificationsEnabled = true
     private lateinit var notificationRef: DatabaseReference
@@ -177,13 +180,16 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
         val currentUserId = auth.currentUser?.uid
 
         // Load user's name
-        if (currentUserId != null) {
+        if (cachedUserName != null) {
+            txtUserName.text = cachedUserName
+        } else if (currentUserId != null) {
             database.child(currentUserId)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
                         val displayName = firstName.trim()
-                        txtUserName.text = if (displayName.isNotEmpty()) displayName else "Welcome!"
+                        cachedUserName = if (displayName.isNotEmpty()) displayName else "Welcome!"
+                        txtUserName.text = cachedUserName
                     }
 
                     override fun onCancelled(error: DatabaseError) {
@@ -194,6 +200,7 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
         } else {
             txtUserName.text = "Guest"
         }
+
 
         val profileButton: ImageButton = findViewById(R.id.profileButton)
 
@@ -265,31 +272,40 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                 }
             })
 
-        // 🔥 Load NGOs from Firebase
-        val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
-
         val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
         recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val ngoList = mutableListOf<Ngo>()
-                for (child in snapshot.children) {
-                    val ngo = child.getValue(Ngo::class.java)
-                    if (ngo != null) {
-                        ngoList.add(ngo)
+
+        // Load NGOs from Firebase or cache
+        if (cachedNgoList != null) {
+            recyclerNgos.adapter = NgoAdapter(cachedNgoList!!) { selectedNgo ->
+                val intent = Intent(this@Home, HelpRequestsActivity::class.java)
+                intent.putExtra("ngoName", selectedNgo.name)
+                startActivity(intent)
+            }
+        } else {
+            val ngoRef = FirebaseDatabase.getInstance().getReference("NGOs")
+            ngoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val ngoList = mutableListOf<Ngo>()
+                    for (child in snapshot.children) {
+                        val ngo = child.getValue(Ngo::class.java)
+                        if (ngo != null) {
+                            ngoList.add(ngo)
+                        }
+                    }
+                    cachedNgoList = ngoList
+                    recyclerNgos.adapter = NgoAdapter(ngoList) { selectedNgo ->
+                        val intent = Intent(this@Home, HelpRequestsActivity::class.java)
+                        intent.putExtra("ngoName", selectedNgo.name)
+                        startActivity(intent)
                     }
                 }
-                recyclerNgos.adapter = NgoAdapter(ngoList) { selectedNgo ->
-                    val intent = Intent(this@Home, HelpRequestsActivity::class.java)
-                    intent.putExtra("ngoName", selectedNgo.name)
-                    startActivity(intent)
-                }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@Home, "Failed to load NGOs", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
 
         // Setup resources
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
