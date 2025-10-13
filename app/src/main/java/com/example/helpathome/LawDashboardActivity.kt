@@ -59,72 +59,63 @@ class LawDashboardActivity : AppCompatActivity() {
     }
 
     private fun loadAllAlerts() {
-        usersRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                alertList.clear()
-                snapshot.children.forEach { userSnap ->
-                    val userId = userSnap.key ?: return@forEach
-                    val sosActive = userSnap.child("sosActive").getValue(Boolean::class.java) ?: false
-                    if (!sosActive) return@forEach
+        usersRef.orderByChild("sosActive").equalTo(true).limitToLast(50)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    alertList.clear()
+                    snapshot.children.forEach { userSnap ->
+                        val userId = userSnap.key ?: return@forEach
+                        val lastLocation = userSnap.child("lastKnownLocation")
+                            .getValue(LastKnownLocation::class.java)
 
-                    val lastLocation = userSnap.child("lastKnownLocation")
-                        .getValue(LastKnownLocation::class.java)
-
-                    val alert = alerts(
-                        userId = userId,
-                        lastKnownLocation = lastLocation,
-                        sosActive = true
-                    )
-                    alertList.add(alert)
+                        val alert = alerts(
+                            userId = userId,
+                            lastKnownLocation = lastLocation,
+                            sosActive = true,
+                            resolvedAt = null
+                        )
+                        alertList.add(alert)
+                    }
+                    alertAdapter.notifyDataSetChanged()
+                    updateSummaryAndSyncTime()
                 }
-                alertAdapter.notifyDataSetChanged()
-                updateSummaryAndSyncTime()
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@LawDashboardActivity,
-                    "Failed to load alerts: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@LawDashboardActivity, "Failed to load alerts: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+
 
     private fun loadResolvedAlerts() {
-        usersRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                resolvedAlertList.clear()
-                snapshot.children.forEach { userSnap ->
-                    val userId = userSnap.key ?: return@forEach
-                    val sosActive = userSnap.child("sosActive").getValue(Boolean::class.java) ?: false
-                    if (sosActive) return@forEach
+        usersRef.orderByChild("resolvedAt").startAt(1.0).limitToLast(50)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    resolvedAlertList.clear()
+                    snapshot.children.forEach { userSnap ->
+                        val userId = userSnap.key ?: return@forEach
+                        val resolvedAt = userSnap.child("resolvedAt").getValue(Long::class.java) ?: return@forEach
+                        val lastLocation = userSnap.child("lastKnownLocation")
+                            .getValue(LastKnownLocation::class.java)
 
-                    val resolvedAt = userSnap.child("resolvedAt").getValue(Long::class.java)
-                    if (resolvedAt == null) return@forEach
-                    val lastLocation = userSnap.child("lastKnownLocation")
-                        .getValue(LastKnownLocation::class.java)
-
-                    val alert = alerts(
-                        userId = userId,
-                        lastKnownLocation = lastLocation,
-                        sosActive = false
-                    )
-                    resolvedAlertList.add(alert)
+                        val alert = alerts(
+                            userId = userId,
+                            lastKnownLocation = lastLocation,
+                            sosActive = false,
+                            resolvedAt = resolvedAt
+                        )
+                        resolvedAlertList.add(alert)
+                    }
+                    resolvedAlertAdapter.notifyDataSetChanged()
+                    updateSummaryAndSyncTime()
                 }
-                resolvedAlertAdapter.notifyDataSetChanged()
-                updateSummaryAndSyncTime()
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@LawDashboardActivity,
-                    "Failed to load resolved alerts: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@LawDashboardActivity, "Failed to load resolved alerts: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
+
 
     private fun updateSummaryAndSyncTime() {
         val activeCount = alertList.size
@@ -135,10 +126,13 @@ class LawDashboardActivity : AppCompatActivity() {
         syncTimeTextView.text = "Last synced at: $lastSync"
     }
 
-
     private fun markAsResolved(alert: alerts) {
         val userId = alert.userId ?: return
-        usersRef.child(userId).child("sosActive").setValue(false)
+        val updates = mapOf(
+            "sosActive" to false,
+            "resolvedAt" to System.currentTimeMillis()
+        )
+        usersRef.child(userId).updateChildren(updates)
             .addOnSuccessListener {
                 Toast.makeText(this, "Alert marked as resolved", Toast.LENGTH_SHORT).show()
             }
@@ -157,8 +151,4 @@ class LawDashboardActivity : AppCompatActivity() {
                 Toast.makeText(this, "Failed to delete alert", Toast.LENGTH_SHORT).show()
             }
     }
-
 }
-
-
-

@@ -19,7 +19,7 @@
             android:id="@+id/textUserId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_id_123456"
+            android:text="User ID: 123456"
             android:textStyle="bold"
             android:textColor="@android:color/black"
             android:textSize="14sp" />
@@ -29,7 +29,7 @@
             android:id="@+id/textLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/location_suburb_city"
+            android:text="Location: Suburb, City"
             android:textColor="@android:color/black"
             android:textSize="14sp"
             android:layout_marginTop="4dp" />
@@ -39,20 +39,12 @@
             android:id="@+id/textTimestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/timestamp_2025_08_05_12_34"
+            android:text="Timestamp: 2025-08-05 12:34"
             android:textColor="@android:color/darker_gray"
             android:textSize="13sp"
             android:layout_marginTop="2dp" />
 
-        <!-- Status -->
-        <TextView
-            android:id="@+id/textStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/status_unresolved"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
+
 
         <!-- Buttons: Resolve + Delete -->
         <LinearLayout
@@ -66,7 +58,7 @@
                 android:id="@+id/buttonResolve"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/mark_as_resolved"
+                android:text="Mark as Resolved"
                 android:backgroundTint="@color/design_default_color_primary"
                 android:textColor="@android:color/white" />
 
@@ -74,7 +66,7 @@
                 android:id="@+id/buttonDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/delete"
+                android:text="Delete"
                 android:layout_marginStart="8dp"
                 android:backgroundTint="@android:color/holo_red_dark"
                 android:textColor="@android:color/white" />

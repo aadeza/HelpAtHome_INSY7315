@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewLawDashboard"
@@ -30,7 +30,7 @@
             android:id="@+id/textTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/law_enforcement_dashboard"
+            android:text="Law Enforcement Dashboard"
             android:textColor="#63C1FF"
             android:textSize="28sp"
             android:textStyle="bold"
@@ -83,7 +83,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFE082"
-            android:text="@string/law_enforcement_reminders"
+            android:text="🚨 Law Enforcement Reminders 🚨"
             android:textColor="#000000"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -96,7 +96,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#E3F2FD"
-            android:text="@string/ensure_all_alerts_are_verified_before_marking_as_resolved_n_maintain_confidentiality_of_user_data_n_for_any_technical_issues_contact_admin_support_immediately_n_n_dispatch_27_11_123_4567_n_national_command_center_27_86_000_1234_n_fire_department_27_11_987_6543_n_emergency_medical_services_27_11_246_8100_n_forensics_unit_27_11_369_2580_n_n_code_1_immediate_response_n_code_2_non_emergency_n_code_3_backup_required_n_n_protocol_reminder_n_use_secure_radio_channels_for_sensitive_updates"
+            android:text="• Ensure all alerts are verified before marking as resolved.\n• Maintain confidentiality of user data.\n• For any technical issues, contact admin support immediately.\n\n• Dispatch: +27 11 123 4567\n• National Command Center: +27 86 000 1234\n• Fire Department: +27 11 987 6543\n• Emergency Medical Services: +27 11 246 8100\n• Forensics Unit: +27 11 369 2580\n\n• Protocol Reminder:  \n   - Use secure radio channels for sensitive updates."
             android:textColor="#000000"
             android:textSize="14sp"
             android:lineSpacingExtra="6dp"
@@ -109,7 +109,7 @@
             android:id="@+id/activeAlertsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/active_sos_alerts"
+            android:text="Active SOS Alerts"
             android:textColor="#000000"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -118,7 +118,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerAlerts"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:scrollbars="vertical"
             tools:listitem="@layout/alert_item" />
@@ -128,7 +128,7 @@
             android:id="@+id/resolvedAlertsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/resolved_alerts_history"
+            android:text="Resolved Alerts History"
             android:textColor="#666666"
             android:textSize="18sp"
             android:textStyle="italic"
@@ -138,14 +138,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerResolvedAlerts"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"
             android:scrollbars="vertical"
             tools:listitem="@layout/alert_item" />
 
     </LinearLayout>
-
-
-
-</ScrollView>
-
+</androidx.core.widget.NestedScrollView>
