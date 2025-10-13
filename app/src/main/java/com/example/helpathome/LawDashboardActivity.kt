@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.helpathome.adapters.AlertAdapter
 import com.example.helpathome.models.LastKnownLocation
 import com.example.helpathome.models.alerts
 import com.google.firebase.database.*
