@@ -1,4 +1,4 @@
-gimport com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.FirebaseDatabase
 import org.junit.Assert.*
 import org.junit.Test
 import java.util.concurrent.CountDownLatch
