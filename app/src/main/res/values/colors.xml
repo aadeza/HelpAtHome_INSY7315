@@ -14,6 +14,7 @@
     <color name="user_blue">#007AFF</color>
     <color name="ngo_green">#34C759</color>
     <color name="admin_black">#000000</color>
+    <color name="darker_gray">#515151</color>
 
     <!-- Theme required colors -->
     <color name="colorPrimary">#63C1FF</color>

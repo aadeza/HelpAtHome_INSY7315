@@ -82,7 +82,7 @@
             android:id="@+id/textPSATitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFE082"
+            android:background="@drawable/bg_reminders"
             android:text="@string/law_enforcement_reminders"
             android:textColor="#000000"
             android:textSize="16sp"
@@ -95,11 +95,11 @@
             android:id="@+id/textPSAContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E3F2FD"
+           android:background="@drawable/bg_edit_text"
             android:text="@string/ensure_all_alerts_are_verified_before_marking_as_resolved_n_maintain_confidentiality_of_user_data_n_for_any_technical_issues_contact_admin_support_immediately_n_n_dispatch_27_11_123_4567_n_national_command_center_27_86_000_1234_n_fire_department_27_11_987_6543_n_emergency_medical_services_27_11_246_8100_n_forensics_unit_27_11_369_2580_n_n_code_1_immediate_response_n_code_2_non_emergency_n_code_3_backup_required_n_n_protocol_reminder_n_use_secure_radio_channels_for_sensitive_updates"
             android:textColor="#000000"
             android:textSize="14sp"
-            android:lineSpacingExtra="6dp"
+            android:lineSpacingExtra="4dp"
             android:padding="8dp"
             android:layout_marginBottom="12dp"
             android:fontFamily="sans-serif-light" />
@@ -119,7 +119,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerAlerts"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="180dp"
                 android:nestedScrollingEnabled="false"
                 android:scrollbars="vertical"
                 tools:listitem="@layout/alert_item" />
@@ -132,9 +132,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/resolved_alerts_history"
-            android:textColor="#666666"
-            android:textSize="18sp"
-            android:textStyle="italic"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp" />
 

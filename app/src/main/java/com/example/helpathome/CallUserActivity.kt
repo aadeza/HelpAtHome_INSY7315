@@ -57,6 +57,14 @@ class CallUserActivity : AppCompatActivity() {
         }
 
 
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedContact = contactList[position]
+            val phoneNumber = selectedContact.second
+            val intent = Intent(Intent.ACTION_DIAL)
+            intent.data = Uri.parse("tel:$phoneNumber")
+            startActivity(intent)
+        }
+
         dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 adapter.clear()

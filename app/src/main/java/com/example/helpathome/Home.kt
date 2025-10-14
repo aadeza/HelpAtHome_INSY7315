@@ -40,7 +40,7 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
         newName: String,
         newSurname: String,
         newEmail: String,
-        newPassword: String
+        newPassword: String?
     ) {
         val user = auth.currentUser
         if (user == null) {
@@ -51,54 +51,59 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
         val credential = EmailAuthProvider.getCredential(user.email!!, currentPass)
 
         // Step 1: Reauthenticate
-        user.reauthenticate(credential).addOnSuccessListener {
-            val updates = mutableMapOf<String, Any>()
+        user.reauthenticate(credential)
+            .addOnSuccessListener {
 
-            // Step 2: Update Email
-            if (newEmail.isNotEmpty() && newEmail != user.email) {
-                user.updateEmail(newEmail).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        updates["email"] = newEmail
-                    } else {
-                        Toast.makeText(this, "Failed to update email: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-            // Step 3: Update Password
-            if (newPassword.isNotEmpty()) {
-                user.updatePassword(newPassword).addOnCompleteListener { task ->
-                    if (!task.isSuccessful) {
-                        Toast.makeText(this, "Failed to update password: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-
-            // Step 4: Update Realtime Database (Name & Surname)
-            if (newName.isNotEmpty()) updates["firstName"] = newName
-            if (newSurname.isNotEmpty()) updates["lastName"] = newSurname
-
-            if (updates.isNotEmpty()) {
-                database.child(user.uid).updateChildren(updates)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Account updated successfully", Toast.LENGTH_SHORT).show()
-
-                        // 🔥 Update UI immediately
-                        if (newName.isNotEmpty()) {
-                            txtUserName.text = newName
+                // Step 2: Update Email
+                if (newEmail.isNotEmpty() && newEmail != user.email) {
+                    user.updateEmail(newEmail)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Email updated successfully", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                    .addOnFailureListener {
-                        Toast.makeText(this, "Failed to update profile data", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Toast.makeText(this, "Nothing to update", Toast.LENGTH_SHORT).show()
-            }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Email update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                }
 
-        }.addOnFailureListener {
-            Toast.makeText(this, "Re-authentication failed. Wrong password?", Toast.LENGTH_SHORT).show()
-        }
+                // Step 3: Update Password
+                if (!newPassword.isNullOrEmpty()) {
+                    user.updatePassword(newPassword)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Password update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                }
+
+                // Step 4: Update Database (Name & Surname)
+                val updates = mutableMapOf<String, Any>()
+                if (newName.isNotEmpty()) updates["firstName"] = newName
+                if (newSurname.isNotEmpty()) updates["lastName"] = newSurname
+
+                if (updates.isNotEmpty()) {
+                    database.child(user.uid).updateChildren(updates)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                            // Update UI immediately
+                            if (newName.isNotEmpty()) txtUserName.text = newName
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Profile update failed: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                }
+
+                // If nothing changed
+                if (newEmail.isEmpty() && newPassword.isNullOrEmpty() && updates.isEmpty()) {
+                    Toast.makeText(this, "Nothing to update", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Re-authentication failed. Wrong password?", Toast.LENGTH_SHORT).show()
+            }
     }
+
 
 
 
@@ -171,7 +176,11 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@Home,
+                            "Failed to load notifications",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 })
         }
@@ -186,14 +195,16 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
             database.child(currentUserId)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val firstName = snapshot.child("firstName").getValue(String::class.java) ?: ""
+                        val firstName =
+                            snapshot.child("firstName").getValue(String::class.java) ?: ""
                         val displayName = firstName.trim()
                         cachedUserName = if (displayName.isNotEmpty()) displayName else "Welcome!"
                         txtUserName.text = cachedUserName
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@Home, "Failed to load user info", Toast.LENGTH_SHORT)
+                            .show()
                         txtUserName.text = "User"
                     }
                 })
@@ -211,10 +222,37 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.menu_edit_account -> {
-                        val dialog = EditAccountDialog()
-                        dialog.show(supportFragmentManager, "EditAccountDialog")
+                        val user = auth.currentUser
+                        if (user != null) {
+
+                            database.child(user.uid).get().addOnSuccessListener { snapshot ->
+                                val currentName =
+                                    snapshot.child("firstName").getValue(String::class.java) ?: ""
+                                val currentSurname =
+                                    snapshot.child("lastName").getValue(String::class.java) ?: ""
+                                val currentEmail = user.email ?: ""
+                                val dob = snapshot.child("dob").getValue(String::class.java) ?: " "
+
+                                val dialog = EditAccountDialog(
+                                    currentName,
+                                    currentSurname,
+                                    currentEmail,
+                                    dob
+                                )
+                                dialog.show(supportFragmentManager, "EditAccountDialog")
+                            }.addOnFailureListener {
+                                Toast.makeText(
+                                    this,
+                                    "Failed to fetch user data",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(this, "No logged-in user", Toast.LENGTH_SHORT).show()
+                        }
                         true
                     }
+
 
                     R.id.menu_notifications -> {
                         notificationsEnabled = !notificationsEnabled
@@ -222,11 +260,13 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                         if (!notificationsEnabled) {
                             notificationAdapter.updateNotifications(emptyList())
                             item.title = "Switch On Notifications"
-                            Toast.makeText(this, "Notifications switched off", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Notifications switched off", Toast.LENGTH_SHORT)
+                                .show()
                         } else {
                             loadNotifications()
                             item.title = "Switch Off Notifications"
-                            Toast.makeText(this, "Notifications switched on", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Notifications switched on", Toast.LENGTH_SHORT)
+                                .show()
                         }
                         true
                     }
@@ -234,10 +274,11 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                     R.id.menu_logout -> {
                         auth.signOut()
                         Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this,  MainActivity::class.java))
+                        startActivity(Intent(this, MainActivity::class.java))
                         finish()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -268,12 +309,14 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Home, "Failed to load notifications", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
 
         val recyclerNgos = findViewById<RecyclerView>(R.id.recyclerNgos)
-        recyclerNgos.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerNgos.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // Load NGOs from Firebase or cache
         if (cachedNgoList != null) {
@@ -309,7 +352,8 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
 
         // Setup resources
         val recyclerResources = findViewById<RecyclerView>(R.id.recyclerResources)
-        recyclerResources.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerResources.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         recyclerResources.adapter = ResourceAdapter(
             listOf(
                 Resource("Mental Health Tips", R.drawable.mentalhealth),
@@ -338,14 +382,16 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val active = snapshot.getValue(Boolean::class.java) ?: false
                     if (isSosOn && !active) {
-                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@Home, "SOS turned OFF by admin.", Toast.LENGTH_LONG)
+                            .show()
                     }
                     isSosOn = active
                     updateSosButtonUI()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@Home, "Failed to read SOS status", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
             sosRef.addValueEventListener(sosStatusListener!!)
@@ -387,7 +433,6 @@ class Home : AppCompatActivity(), EditAccountDialog.OnEditAccountListener {
             )
         }
     }
-
 
 
 

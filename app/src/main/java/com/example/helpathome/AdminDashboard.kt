@@ -31,9 +31,9 @@ class AdminDashboard : AppCompatActivity() {
     private lateinit var ngoProfileAdapter: NGOProfilesAdapter
     private val profilesList = mutableListOf<NGOProfile>()
 
-    private lateinit var recyclerActivities : RecyclerView
+    private lateinit var recyclerActivities: RecyclerView
     private val logs = mutableListOf<SystemActivity>()
-    private lateinit var systemActivityAdapter : SystemActivityAdapter
+    private lateinit var systemActivityAdapter: SystemActivityAdapter
     private val dataBase = FirebaseDatabase.getInstance().reference.child("SystemLogs")
 
     private lateinit var statsBtn: FloatingActionButton
@@ -68,7 +68,7 @@ class AdminDashboard : AppCompatActivity() {
         loadNGOs()
         fetchSystemActivities()
 
-        statsBtn.setOnClickListener{
+        statsBtn.setOnClickListener {
             val intent = Intent(this, Statistics::class.java)
             startActivity(intent)
         }
@@ -87,7 +87,11 @@ class AdminDashboard : AppCompatActivity() {
 
                     override fun onCancelled(error: DatabaseError) {
                         Log.e("AdminDashboard", "Failed to load user info", error.toException())
-                        Toast.makeText(this@AdminDashboard, "Failed to load user info", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@AdminDashboard,
+                            "Failed to load user info",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         txtUserName.text = getString(R.string.user)
                     }
                 })
@@ -98,7 +102,8 @@ class AdminDashboard : AppCompatActivity() {
 
 
     private fun setupUsersRecycler() {
-        recyclerUsers.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerUsers.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         usersAdapter = UsersAdapter(usersList) { user, newStatus ->
             updateStatus(user.id, newStatus)
         }
@@ -110,9 +115,10 @@ class AdminDashboard : AppCompatActivity() {
     }
 
     private fun setupNGORecycler() {
-        recyclerNGOProfiles.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        recyclerNGOProfiles.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         ngoProfileAdapter = NGOProfilesAdapter(profilesList) { ngo, newStatus ->
-            updateProfileStatus( ngo.id, newStatus)
+            updateProfileStatus(ngo.id, newStatus)
         }
         recyclerNGOProfiles.adapter = ngoProfileAdapter
 
@@ -135,7 +141,6 @@ class AdminDashboard : AppCompatActivity() {
     }
 
 
-
     private fun fetchSystemActivities() {
         FirebaseDatabase.getInstance().reference
             .child("SystemLogs")
@@ -152,7 +157,8 @@ class AdminDashboard : AppCompatActivity() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@AdminDashboard, "Failed to load logs", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AdminDashboard, "Failed to load logs", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
     }
@@ -166,19 +172,23 @@ class AdminDashboard : AppCompatActivity() {
                     Log.d("AdminDashboard", "User Node: ${userSnap.value}") // 👈 log raw data
 
                     val userId = userSnap.key ?: continue
-                    val firstName = userSnap.child("firstName").getValue(String::class.java) ?: "unknown"
+                    val firstName =
+                        userSnap.child("firstName").getValue(String::class.java) ?: "unknown"
                     val lastName = userSnap.child("lastName").getValue(String::class.java) ?: ""
-                    val userType = userSnap.child("userType").getValue(String::class.java) ?: "unknown"
-                    val accountStatus = userSnap.child("accountStatus").getValue(String::class.java) ?: "active"
+                    val userType =
+                        userSnap.child("userType").getValue(String::class.java) ?: "unknown"
+                    val accountStatus =
+                        userSnap.child("accountStatus").getValue(String::class.java) ?: "active"
 
-                    usersList.add(Users(userId, firstName, lastName,userType, accountStatus))
+                    usersList.add(Users(userId, firstName, lastName, userType, accountStatus))
                 }
                 usersAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("AdminDashboard", "Failed to fetch users", error.toException())
-                Toast.makeText(this@AdminDashboard, "Failed to fetch users", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AdminDashboard, "Failed to fetch users", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
     }
@@ -194,17 +204,32 @@ class AdminDashboard : AppCompatActivity() {
                     val name = ngoSnap.child("name").getValue(String::class.java) ?: ""
                     val founder = ngoSnap.child("founder").getValue(String::class.java) ?: ""
                     val category = ngoSnap.child("category").getValue(String::class.java) ?: ""
-                    val dateFounded = ngoSnap.child("dateFounded").getValue(String::class.java) ?: ""
-                    val status = ngoSnap.child("profileStatus").getValue(String::class.java) ?: "Awaiting Approval"
+                    val dateFounded =
+                        ngoSnap.child("dateFounded").getValue(String::class.java) ?: ""
+                    val status = ngoSnap.child("profileStatus").getValue(String::class.java)
+                        ?: "Awaiting Approval"
 
-                    profilesList.add(NGOProfile(ngoId, name, founder, category, dateFounded, status))
+                    profilesList.add(
+                        NGOProfile(
+                            ngoId,
+                            name,
+                            founder,
+                            category,
+                            dateFounded,
+                            status
+                        )
+                    )
                 }
                 ngoProfileAdapter.notifyDataSetChanged()
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("AdminDashboard", "Failed to fetch NGO profiles", error.toException())
-                Toast.makeText(this@AdminDashboard, "Failed to fetch NGO profiles", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@AdminDashboard,
+                    "Failed to fetch NGO profiles",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
     }
@@ -222,7 +247,11 @@ class AdminDashboard : AppCompatActivity() {
                             Log.d("AdminDashboard", "Initialized accountStatus=active for $userId")
                         }
                         .addOnFailureListener { e ->
-                            Log.w("AdminDashboard", "Failed to initialize accountStatus for $userId", e)
+                            Log.w(
+                                "AdminDashboard",
+                                "Failed to initialize accountStatus for $userId",
+                                e
+                            )
                         }
                 }
 
@@ -233,7 +262,11 @@ class AdminDashboard : AppCompatActivity() {
                             Log.d("AdminDashboard", "Removed profileStatus from User $userId")
                         }
                         .addOnFailureListener { e ->
-                            Log.w("AdminDashboard", "Failed to remove profileStatus from User $userId", e)
+                            Log.w(
+                                "AdminDashboard",
+                                "Failed to remove profileStatus from User $userId",
+                                e
+                            )
                         }
                 }
             }
@@ -250,10 +283,17 @@ class AdminDashboard : AppCompatActivity() {
                 if (currentStatus == null) {
                     ngoRef.child(ngoId).child("profileStatus").setValue("Awaiting Approval")
                         .addOnSuccessListener {
-                            Log.d("AdminDashboard", "Initialized profileStatus=Awaiting Approval for NGO $ngoId")
+                            Log.d(
+                                "AdminDashboard",
+                                "Initialized profileStatus=Awaiting Approval for NGO $ngoId"
+                            )
                         }
                         .addOnFailureListener { e ->
-                            Log.w("AdminDashboard", "Failed to initialize profileStatus for NGO $ngoId", e)
+                            Log.w(
+                                "AdminDashboard",
+                                "Failed to initialize profileStatus for NGO $ngoId",
+                                e
+                            )
                         }
                 }
             }
@@ -263,54 +303,132 @@ class AdminDashboard : AppCompatActivity() {
     }
 
     private fun updateStatus(userId: String, newStatus: String) {
+        Log.d("updateStatus", "Updating status of user $userId to $newStatus")
+
         userRef.child(userId).child("accountStatus").setValue(newStatus)
             .addOnSuccessListener {
+
+                // Update RecyclerView immediately
                 val index = usersList.indexOfFirst { it.id == userId }
                 if (index != -1) {
-                    usersList[index].accountStatus = newStatus
+                    val updatedUser = usersList[index]
+                    updatedUser.accountStatus = newStatus
                     usersAdapter.notifyItemChanged(index)
-
-
                 }
-                val actorId = auth.currentUser?.uid ?: "unknown"
 
-                ActivityLogger.log(
-                    actorId = actorId,
-                    actorType = "Admin",
-                    category = "Updated Account Status",
-                    message = "User ${usersList[index].name} ${usersList[index].lastName} status changed to $newStatus",
-                    color = "#ABCDDE"
-                )
-                Toast.makeText(this, "User status updated to $newStatus", Toast.LENGTH_SHORT).show()
+                val currentUserId = auth.currentUser?.uid
+                if (currentUserId != null) {
+                    // Get admin info
+                    userRef.child(currentUserId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val adminName = snapshot.child("firstName").getValue(String::class.java) ?: "Admin"
+
+                                // Get target user info
+                                val targetUser = usersList.find { it.id == userId }
+                                val targetUserName = targetUser?.let { "${it.name} ${it.lastName}" } ?: "User"
+
+                                // Log activity
+                                ActivityLogger.log(
+                                    actorId = currentUserId,
+                                    actorType = "Admin",
+                                    category = "Updated Account Status",
+                                    message = "User $adminName changed user $targetUserName's account status to $newStatus",
+                                    color = "#ABCDDE"
+                                )
+
+                                Toast.makeText(this@AdminDashboard, "User status updated to $newStatus", Toast.LENGTH_SHORT).show()
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.e("updateStatus", "Failed to load admin info", error.toException())
+                                Toast.makeText(this@AdminDashboard, "Failed to load admin info", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                } else {
+                    Log.w("updateStatus", "No logged-in admin found")
+                }
             }
             .addOnFailureListener { e ->
-                Log.e("AdminDashboard", "Error updating user status", e)
+                Log.e("updateStatus", "Error updating user status", e)
+                Toast.makeText(this@AdminDashboard, "Failed to update status", Toast.LENGTH_SHORT).show()
             }
     }
 
 
+
     private fun updateProfileStatus(ngoId: String, newStatus: String) {
+        Log.d("updateProfileStatus", "Updating profile status for NGO $ngoId to $newStatus")
+
         ngoRef.child(ngoId).child("profileStatus").setValue(newStatus)
             .addOnSuccessListener {
                 val index = profilesList.indexOfFirst { it.id == ngoId }
+                Log.d("updateProfileStatus", "Index in profilesList: $index")
+
                 if (index != -1) {
                     profilesList[index].status = newStatus
                     ngoProfileAdapter.notifyItemChanged(index)
                 }
 
-                val actorId = auth.currentUser?.uid ?: "unknown"
-                ActivityLogger.log(
-                    actorId = actorId,
-                    actorType = "Admin",
-                    category = "Approved NGO Profile",
-                    message = "User ${usersList[index].name} ${usersList[index].lastName} approved ${profilesList[index].name}'s profile",
-                    color = "#ABCDDE"
-                )
+                val actorId = auth.currentUser?.uid
+                if (actorId != null) {
+                    // Fetch admin info from Firebase
+                    userRef.child(actorId)
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val adminFirstName =
+                                    snapshot.child("firstName").getValue(String::class.java)
+                                        ?: "Unknown"
+                                val adminLastName =
+                                    snapshot.child("lastName").getValue(String::class.java) ?: ""
 
-                Toast.makeText(this, "NGO status updated to $newStatus", Toast.LENGTH_SHORT).show()
+                                val ngoName =
+                                    if (index != -1) profilesList[index].name else "Unknown NGO"
+
+                                ActivityLogger.log(
+                                    actorId = actorId,
+                                    actorType = "Admin",
+                                    category = "Approved NGO Profile",
+                                    message = "Admin $adminFirstName $adminLastName approved $ngoName's profile",
+                                    color = "#ABCDDE"
+                                )
+
+                                Toast.makeText(
+                                    this@AdminDashboard,
+                                    "NGO status updated to $newStatus",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.e(
+                                    "updateProfileStatus",
+                                    "Failed to load admin info",
+                                    error.toException()
+                                )
+                                Toast.makeText(
+                                    this@AdminDashboard,
+                                    "NGO status updated, but failed to load admin info",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
+                } else {
+                    Log.w("updateProfileStatus", "No logged-in admin found")
+                    Toast.makeText(
+                        this@AdminDashboard,
+                        "NGO status updated, but admin not identified",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
             .addOnFailureListener { e ->
-                Log.e("AdminDashboard", "Error updating NGO status", e)
+                Log.e("updateProfileStatus", "Error updating NGO status", e)
+                Toast.makeText(
+                    this@AdminDashboard,
+                    "Failed to update NGO status",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
     }
 }

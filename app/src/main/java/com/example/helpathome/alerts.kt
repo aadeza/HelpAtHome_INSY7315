@@ -8,7 +8,7 @@ data class LastKnownLocation(
     var timestamp: Long? = null
 )
 
-// Alerts model updated to use nested location
+
 data class alerts(
     var userId: String? = null,
     var lastKnownLocation: LastKnownLocation? = null,

@@ -1,6 +1,7 @@
 <resources>
     <style name="Theme.HelpAtHome" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Required Material Components attributes -->
+
+
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
         <item name="colorOnPrimary">@android:color/white</item>
@@ -10,5 +11,6 @@
 
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="android:windowBackground">@android:color/white</item>
+
     </style>
 </resources>

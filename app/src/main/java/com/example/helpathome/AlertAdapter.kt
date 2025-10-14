@@ -19,8 +19,10 @@ class AlertAdapter(
     class AlertViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textUserId: TextView = itemView.findViewById(R.id.textUserId)
         val textLocation: TextView = itemView.findViewById(R.id.textLocation)
+        val textStatus: TextView = itemView.findViewById(R.id.textStatus)
         val buttonResolve: Button = itemView.findViewById(R.id.buttonResolve)
         val buttonDelete: Button = itemView.findViewById(R.id.buttonDelete)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertViewHolder {
@@ -36,9 +38,19 @@ class AlertAdapter(
         val alert = alertList[position]
         holder.textUserId.text = "User ID: ${alert.userId}"
         holder.textLocation.text = "Location: ${alert.lastKnownLocation?.address ?: "Unknown"}"
+        holder.textStatus.text = "Status: Unresolved"
 
-        // Show resolve button only for active alerts
-        holder.buttonResolve.visibility = if (alert.sosActive) View.VISIBLE else View.GONE
+
+        if (alert.sosActive) {
+            holder.textStatus.text = "Status: Unresolved"
+            holder.textStatus.setTextColor(holder.itemView.context.getColor(R.color.police_red))
+            holder.buttonResolve.visibility = View.VISIBLE
+        } else {
+            holder.textStatus.text = "Status: Resolved"
+            holder.textStatus.setTextColor(holder.itemView.context.getColor(R.color.ngo_green))
+            holder.buttonResolve.visibility = View.GONE
+        }
+
 
         holder.buttonResolve.setOnClickListener {
             onResolveClick(alert)

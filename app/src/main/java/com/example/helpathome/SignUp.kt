@@ -45,7 +45,7 @@ class SignUp : AppCompatActivity() {
             }
 
             // 2. Email format check
-            if (!Patterns.EMAIL_ADDRESS.matcher(emailText).matches()) {
+            if (!isValidEmail(emailText)) {
                 email.error = "Enter a valid email"
                 return@setOnClickListener
             }
@@ -120,7 +120,7 @@ class SignUp : AppCompatActivity() {
         dob: String,
         email: String
     ): Boolean {
-        // 1) Basic rules
+
         if (password.length < 8) {
             Toast.makeText(this, "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show()
             return false
@@ -217,5 +217,8 @@ class SignUp : AppCompatActivity() {
         return true
     }
 
+    private fun isValidEmail(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
 
 }

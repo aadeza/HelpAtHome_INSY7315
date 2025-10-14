@@ -5,6 +5,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.helpathome.adapters.AlertAdapter
 import com.example.helpathome.models.LastKnownLocation
@@ -37,7 +38,7 @@ class LawDashboardActivity : AppCompatActivity() {
         syncTimeTextView = findViewById(R.id.textSyncTime)
 
         recyclerView = findViewById(R.id.recyclerAlerts)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         alertAdapter = AlertAdapter(
             alertList,
             onResolveClick = { alert -> markAsResolved(alert) },
@@ -45,14 +46,21 @@ class LawDashboardActivity : AppCompatActivity() {
         )
         recyclerView.adapter = alertAdapter
 
+        val snapHelper = PagerSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerView)
+
         resolvedRecyclerView = findViewById(R.id.recyclerResolvedAlerts)
-        resolvedRecyclerView.layoutManager = LinearLayoutManager(this)
+        resolvedRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         resolvedAlertAdapter = AlertAdapter(
             resolvedAlertList,
             onResolveClick = { /* No action */ },
             onDeleteClick = { alert -> deleteAlert(alert) }
         )
         resolvedRecyclerView.adapter = resolvedAlertAdapter
+
+
+
+        snapHelper.attachToRecyclerView(resolvedRecyclerView)
 
         loadAllAlerts()
         loadResolvedAlerts()
