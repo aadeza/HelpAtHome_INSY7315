@@ -12,13 +12,13 @@
     <LinearLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="32dp"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:paddingBottom="32dp">
 
-        <!-- Logo -->
+        <!-- App Logo -->
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="120dp"
@@ -33,15 +33,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="@string/help_home"
             android:textColor="#63C1FF"
             android:textSize="36sp"
-            android:textStyle="bold"
-            android:layout_marginTop="8dp" />
+            android:textStyle="bold" />
 
-        <!-- Profile Button and Username -->
+        <!-- Username and Profile Button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,21 +54,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
-                android:textColor="#000000"
                 android:textSize="16sp"
+                android:textColor="#000000"
                 android:layout_marginEnd="8dp" />
 
             <ImageButton
                 android:id="@+id/profileButton"
                 android:layout_width="34dp"
-                android:layout_height="23dp"
+                android:layout_height="34dp"
                 android:background="@android:color/transparent"
-                android:contentDescription="@string/profile"
                 android:scaleType="fitCenter"
+                android:contentDescription="@string/profile"
                 android:src="@drawable/profileiconn" />
         </LinearLayout>
 
-        <!-- Location -->
+        <!-- Location Section -->
         <LinearLayout
             android:id="@+id/locationSection"
             android:layout_width="match_parent"
@@ -90,23 +90,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/fetching_location"
-                android:textColor="#000000"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textColor="#000000" />
         </LinearLayout>
 
         <!-- Notifications Section -->
-
-        <!-- NGOs Section -->
-
-        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/notificationsSection"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="8dp">
 
             <TextView
                 android:id="@+id/notificationsTitle"
@@ -122,14 +118,15 @@
                 android:id="@+id/recyclerNotifications"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:nestedScrollingEnabled="false"
+                android:nestedScrollingEnabled="true"
                 tools:listitem="@layout/item_notification" />
         </LinearLayout>
 
+        <!-- NGOs Section -->
         <LinearLayout
             android:id="@+id/ngoSection"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/box_background"
             android:orientation="vertical"
@@ -145,15 +142,27 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <Spinner
+                android:id="@+id/spinnerNgoCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:spinnerMode="dropdown" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerNgos"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:nestedScrollingEnabled="false"
-                android:orientation="horizontal"
-                tools:listitem="@layout/item_ngo" />
+                android:scrollbars="horizontal"
+                android:overScrollMode="never"
+                tools:listitem="@layout/item_ngo_browse" />
         </LinearLayout>
 
+        <!-- Resources Section -->
         <LinearLayout
             android:id="@+id/resourcesSection"
             android:layout_width="match_parent"
@@ -168,11 +177,11 @@
                 android:id="@+id/resourcesTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="@string/resources"
                 android:textColor="#000000"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerResources"
@@ -185,17 +194,50 @@
         </LinearLayout>
 
         <!-- SOS Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSos"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="32dp"
+            android:padding="12dp"
+            android:backgroundTint="#D32F2F"
             android:text="@string/hold_for_sos"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#880000"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"
-            android:layout_gravity="center_horizontal" />
+            app:cornerRadius="12dp"
+            android:icon="@drawable/ic_sos"
+            app:iconSize="24dp"
+            app:iconPadding="8dp"
+            app:iconGravity="textStart"
+            android:iconTint="#FFFFFF"
+            app:elevation="6dp"
+            app:strokeColor="#B71C1C"
+            app:strokeWidth="2dp"
+            app:rippleColor="#FFCDD2" />
+
+        <TextView
+            android:id="@+id/sosDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hold to activate SOS. Your location and details will be sent to law enforcement immediately."
+            android:textColor="#D32F2F"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"
+            android:layout_marginTop="-24dp" />
+        <View
+            android:id="@+id/sosBanner"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginBottom="1dp"
+            android:background="#FF0000"
+            android:visibility="gone"
+            android:gravity="center"
+            android:padding="8dp"
+            android:contentDescription="@string/sos_active_banner" />
 
     </LinearLayout>
 </ScrollView>

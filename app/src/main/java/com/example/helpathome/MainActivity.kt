@@ -101,13 +101,7 @@ class MainActivity : ComponentActivity() {
                                             ).show()
 
 
-                                            ActivityLogger.log(
-                                                actorId = userId,
-                                                actorType = userType,
-                                                category = "Login",
-                                                message = "User $fName $lName logged in successfully",
-                                                color = "#4CAF50"
-                                            )
+
 
                                             when (userType) {
                                                 "Admin" -> startActivity(
@@ -120,9 +114,10 @@ class MainActivity : ComponentActivity() {
                                                 "NGO" -> startActivity(
                                                     Intent(
                                                         this@MainActivity,
-                                                        NGOModel::class.java
+                                                        NgoHomeActivity::class.java
                                                     )
                                                 )
+
 
                                                 "Civilian" -> startActivity(
                                                     Intent(
@@ -180,14 +175,7 @@ class MainActivity : ComponentActivity() {
                         ).show()
 
 
-                        val attemptedEmail = email
-                        ActivityLogger.log(
-                            actorId = attemptedEmail,
-                            actorType = "Unknown",
-                            category = "Login Failed",
-                            message = "Login attempt failed for email: $attemptedEmail. Reason: ${task.exception?.message}",
-                            color = "#F44336"
-                        )
+
 
                         val userId = auth.currentUser?.uid
                         if (userId != null) {
@@ -216,13 +204,7 @@ class MainActivity : ComponentActivity() {
                                                 Toast.LENGTH_LONG
                                             ).show()
 
-                                            ActivityLogger.log(
-                                                actorId = attemptedEmail,
-                                                actorType = "Unknown",
-                                                category = "Multiple Failed Attempts",
-                                                message = "User $attemptedEmail has attempted to log in $attempts times ",
-                                                color = "#F44336"
-                                            )
+
                                         }
                                     }
                                 }

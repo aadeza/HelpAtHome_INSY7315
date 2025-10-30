@@ -11,22 +11,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
-        <!-- Color indicator bar -->
-        <View
-            android:id="@+id/colorBar"
-            android:layout_width="6dp"
-            android:layout_height="match_parent"
-            android:background="#000000" />
+        <!-- NGO logo / notification image -->
+        <ImageView
+            android:id="@+id/imgNotificationLogo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder_logo"
+            android:contentDescription="@string/ngo_logo" />
 
         <!-- Notification content -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/titleText"
@@ -55,5 +58,6 @@
                 android:textColor="#888888"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

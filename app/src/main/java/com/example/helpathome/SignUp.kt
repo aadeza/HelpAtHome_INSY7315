@@ -1,5 +1,6 @@
 package com.example.helpathome
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
@@ -7,10 +8,12 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import java.util.Calendar
 
 class SignUp : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var textDOB: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,24 +23,30 @@ class SignUp : AppCompatActivity() {
 
         val firstName = findViewById<EditText>(R.id.editFirstName)
         val lastName = findViewById<EditText>(R.id.editLastName)
-        val dob = findViewById<EditText>(R.id.editDOB)
+        textDOB = findViewById<TextView>(R.id.textDOB)
+        val phoneNumber = findViewById<EditText>(R.id.editPhoneNumber)
         val userType = findViewById<Spinner>(R.id.spinnerUserType)
         val email = findViewById<EditText>(R.id.editEmail)
         val password = findViewById<EditText>(R.id.editPassword)
         val confirmPassword = findViewById<EditText>(R.id.editConfirmPassword)
         val signUpButton = findViewById<Button>(R.id.buttonSignUp)
 
+        textDOB.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         signUpButton.setOnClickListener {
             val fName = firstName.text.toString().trim()
             val lName = lastName.text.toString().trim()
-            val birthDate = dob.text.toString().trim()
+            val birthDate = textDOB.text.toString().trim()
+            val phone = phoneNumber.text.toString().trim()
             val type = userType.selectedItem.toString()
             val emailText = email.text.toString().trim()
             val pass = password.text.toString()
             val confirmPass = confirmPassword.text.toString()
 
             // 1. Empty field check
-            if (fName.isEmpty() || lName.isEmpty() || birthDate.isEmpty() ||
+            if (fName.isEmpty() || lName.isEmpty() || birthDate.isEmpty() || phone.isEmpty() ||
                 emailText.isEmpty() || pass.isEmpty() || confirmPass.isEmpty()
             ) {
                 Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show()
@@ -67,18 +76,13 @@ class SignUp : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val userId = auth.currentUser?.uid ?: "unknown"
 
-                        ActivityLogger.log(
-                            actorId = userId,
-                            actorType = type,
-                            category = "Sign Up",
-                            message = "User $fName $lName signed up successfully",
-                            color = "#4CAF50" // green for success
-                        )
+
 
                         val user = mapOf(
                             "firstName" to fName,
                             "lastName" to lName,
                             "dob" to birthDate,
+                            "phoneNumber" to phone,
                             "userType" to type,
                             "email" to emailText,
                             "sosActive" to false
@@ -93,13 +97,7 @@ class SignUp : AppCompatActivity() {
                                     startActivity(Intent(this, MainActivity::class.java))
                                     finish()
                                 } else {
-                                    ActivityLogger.log(
-                                        actorId = userId,
-                                        actorType = type,
-                                        category = "Error",
-                                        message = "Failed to save user profile for $fName $lName: ${dbTask.exception?.message}",
-                                        color = "#FF0000" // red for error
-                                    )
+
                                     Toast.makeText(this, "Account created but profile not saved: ${dbTask.exception?.message}", Toast.LENGTH_LONG).show()
                                 }
                             }
@@ -111,6 +109,25 @@ class SignUp : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                textDOB.text = selectedDate
+            },
+            year,
+            month,
+            day
+        )
+        datePickerDialog.show()
     }
 
     fun isValidPassword(

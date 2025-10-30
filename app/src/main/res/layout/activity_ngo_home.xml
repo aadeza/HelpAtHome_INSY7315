@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollViewNgo"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@drawable/homebackground">
+
+    <LinearLayout
+        android:id="@+id/mainNgo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header: logo and profile -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="90dp"
+                android:src="@drawable/helphomeicon"
+                android:contentDescription="@string/logoo" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical">
+
+                <TextView
+                    android:id="@+id/txtUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="NGO User"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageButton
+                    android:id="@+id/profileButton"
+                    android:layout_width="34dp"
+                    android:layout_height="23dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/profile"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/profileiconn" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Notifications panel -->
+        <LinearLayout
+            android:id="@+id/notificationsSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/box_background"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:layout_marginTop="16dp">
+
+            <!-- Header: Notifications title -->
+            <TextView
+                android:id="@+id/notificationsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notifications"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Scrollable notifications list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerNgoNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:nestedScrollingEnabled="true"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:scrollbars="vertical"
+                tools:listitem="@layout/item_notification_ngo" />
+        </LinearLayout>
+
+        <!-- Buttons area -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/btnCreateNGO"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/create_ngo"
+                android:backgroundTint="#1E88E5"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnManageNGOs"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/manage_ngos"
+                android:backgroundTint="#43A047"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

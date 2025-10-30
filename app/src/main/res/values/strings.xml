@@ -97,11 +97,34 @@
     <string name="hold_for_sos_">HOLD FOR SOS</string>
     <string name="no_help_requests_found">📥 No help requests found.</string>
     <string name="loading_help_requests">Loading help requests...</string>
+    <string name="manage_ngos">Manage NGO\'s</string>
+    <string name="see_all">See All notifications</string>
+    <string name="logo_preview">Logo Preview</string>
+    <string name="select_logo">Pick NGO Logo</string>
+    <string name="ngo_category">NGO Category</string>
+    <string name="mission_statement">NGO Mission Statement</string>
+    <string name="vision_statement">NGO Vision Statement</string>
+    <string name="contact_info">Contact Information</string>
+    <string name="ngo_logo">NGO LOGO</string>
+    <string name="sos_active_banner">SOS ACTIVE</string>
+    <string name="reported_dismissed_messages"><![CDATA[Reported & Dismissed Messages]]></string>
     <string-array name="user_types">
         <item>NGO</item>
         <item>Law enforcement</item>
         <item>Civilian</item>
         <item>Admin</item>
+    </string-array>
+    <string-array name="ngo_categories">
+        <item>Human Rights</item>
+        <item>Environmental</item>
+        <item>Animal Welfare</item>
+        <item>Health</item>
+        <item>Education</item>
+        <item>Disaster Relief</item>
+        <item>Community Development</item>
+        <item>Arts and Culture</item>
+        <item>Technology</item>
+        <item>Social Services</item>
     </string-array>
 
 </resources>

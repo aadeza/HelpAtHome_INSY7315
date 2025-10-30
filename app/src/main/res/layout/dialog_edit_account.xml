@@ -13,8 +13,7 @@
         android:orientation="vertical"
         android:padding="8dp">
 
-
-        <!-- Current Password -->
+        <!-- Current Password (REQUIRED FOR ANY CHANGE) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutCurrentPassword"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -22,83 +21,83 @@
             android:layout_height="wrap_content"
             android:hint="Current Password"
             app:endIconMode="password_toggle"
-            app:boxStrokeColor="?attr/colorPrimary"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
             android:layout_marginBottom="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCurrentPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- New Name -->
+
+        <!-- Editable Personal Info -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutNewName"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="New Name"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
             android:layout_marginBottom="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNewName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- New Surname -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutNewSurname"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="New Surname"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
             android:layout_marginBottom="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNewSurname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- New Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutNewPhone"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="New Phone Number"
+            android:layout_marginBottom="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNewPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <!-- Optional: Email locked unless further verification is added -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutNewEmail"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="New Email"
-            app:boxStrokeColor="?attr/colorPrimary"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
+            android:hint="Email (cannot edit here)"
             android:layout_marginBottom="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNewEmail"
-                android:enabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
+                android:enabled="false"
+                android:focusable="false"
+                android:inputType="textEmailAddress"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- New Password -->
+
+        <!-- Optional: Change Password -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layoutNewPassword"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -106,20 +105,15 @@
             android:layout_height="wrap_content"
             android:hint="New Password"
             app:endIconMode="password_toggle"
-            app:boxStrokeColor="?attr/colorPrimary"
-            app:boxCornerRadiusTopStart="12dp"
-            app:boxCornerRadiusTopEnd="12dp"
-            app:boxCornerRadiusBottomStart="12dp"
-            app:boxCornerRadiusBottomEnd="12dp"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNewPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
-
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
+

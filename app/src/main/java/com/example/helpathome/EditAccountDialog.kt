@@ -14,6 +14,7 @@ class EditAccountDialog(
     private val currentName: String,
     private val currentSurname: String,
     private val currentEmail: String,
+    private val currentPhone: String,
     private val dob: String // Date of birth for password validation
 ) : DialogFragment() {
 
@@ -25,6 +26,7 @@ class EditAccountDialog(
         val currentPassword = view.findViewById<EditText>(R.id.etCurrentPassword)
         val newName = view.findViewById<EditText>(R.id.etNewName)
         val newSurname = view.findViewById<EditText>(R.id.etNewSurname)
+        val newPhone = view.findViewById<EditText>(R.id.etNewPhone)
         val newEmail = view.findViewById<EditText>(R.id.etNewEmail)
         val newPassword = view.findViewById<EditText>(R.id.etNewPassword)
 
@@ -34,6 +36,7 @@ class EditAccountDialog(
         // Prepopulate existing info
         newName.setText(currentName)
         newSurname.setText(currentSurname)
+        newPhone.setText(currentPhone)
         newEmail.setText(currentEmail)
 
         // Email validation
@@ -63,6 +66,7 @@ class EditAccountDialog(
                 val currentPass = currentPassword.text.toString().trim()
                 val name = newName.text.toString().trim()
                 val surname = newSurname.text.toString().trim()
+                val phone = newPhone.text.toString().trim()
                 val email = newEmail.text.toString().trim()
                 val password = newPassword.text.toString().trim()
 
@@ -82,7 +86,7 @@ class EditAccountDialog(
                 }
 
                 (activity as? OnEditAccountListener)?.onSaveClicked(
-                    currentPass, name, surname, email, if (password.isEmpty()) null else password
+                    currentPass, name, surname, phone, email, if (password.isEmpty()) null else password
                 )
             }
             .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
@@ -115,6 +119,6 @@ class EditAccountDialog(
     }
 
     interface OnEditAccountListener {
-        fun onSaveClicked(currentPass: String, newName: String, newSurname: String, newEmail: String, newPassword: String?)
+        fun onSaveClicked(currentPass: String, newName: String, newSurname: String, newPhone: String, newEmail: String, newPassword: String?)
     }
 }

@@ -8,10 +8,15 @@ data class LastKnownLocation(
     var timestamp: Long? = null
 )
 
-
 data class alerts(
-    var userId: String? = null,
-    var lastKnownLocation: LastKnownLocation? = null,
-    var sosActive: Boolean = true,
-    var resolvedAt: Long? = null
+    val userId: String? = null,
+    val userName: String? = null,
+    val lastKnownLocation: LastKnownLocation? = null,
+    val sosActive: Boolean = false,
+    val resolvedAt: Long? = null,
+    val resolvedBy: String? = null,
+    val resolvedByName: String? = null,
+    val dismissedAt: Long? = null,
+    val dismissedBy: String? = null,
+    val dismissedByName: String? = null
 )

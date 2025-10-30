@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,25 +20,7 @@
         android:theme="@style/Theme.HelpAtHome"
         tools:targetApi="31">
 
-
-        <activity
-            android:name=".Home"
-            android:exported="false" />
-        <activity
-            android:name=".SignUp"
-            android:exported="false" />
-        <activity
-            android:name=".NGOModel"
-            android:exported="false" />
-
-        <activity
-            android:name=".CallUserActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".CallUsersActivity"
-            android:exported="false" />
-
+        <!-- Launcher activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -49,11 +32,28 @@
             </intent-filter>
         </activity>
 
+        <!-- Sign-up flow -->
+        <activity android:name=".SignUp" android:exported="false" />
 
+        <!-- Home / Dashboard Activities -->
+        <activity android:name=".Home" android:exported="false" />
         <activity android:name=".LawDashboardActivity" android:exported="false" />
         <activity android:name=".AdminDashboard" android:exported="false" />
-        <activity android:name=".HelpRequestsActivity" android:exported="false" />
-        <activity android:name=".Statistics" android:exported="false" />
+
+
+        <!-- NGO flow activities -->
+        <activity android:name=".NgoHomeActivity" android:exported="false" />
+        <activity android:name=".CreateNgoActivity" android:exported="false" />
+        <activity android:name=".ManageNgosActivity" android:exported="false" />
+        <activity android:name=".NgoDetailsActivity" android:exported="false" />
+        <activity android:name=".UserNgoViewActivity" android:exported="false" />
+
+        <!-- Call-related activities -->
+        <activity android:name=".CallUserActivity" android:exported="false" />
+        <activity android:name=".CallUsersActivity" android:exported="false" />
+
+        <!-- ✅ Officer profile editing -->
+
 
     </application>
 </manifest>

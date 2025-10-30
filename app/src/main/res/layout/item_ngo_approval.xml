@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    android:backgroundTint="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:background="#B6E3BDF0">
+
+        <!-- NGO Logo -->
+        <ImageView
+            android:id="@+id/imgNGOLogo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp"
+            android:contentDescription="NGO Logo"
+            android:background="@drawable/ic_placeholder_logo" />
+
+        <!-- NGO Name -->
+        <TextView
+            android:id="@+id/txtNGOName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NGO Name"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#0D47A1" />
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/txtNGODescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description: --"
+            android:textColor="#555555"
+            android:layout_marginTop="4dp" />
+
+        <!-- Contact -->
+        <TextView
+            android:id="@+id/txtNGOContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Contact: --"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Approval Switch -->
+        <Switch
+            android:id="@+id/switchNGOApproval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Approved"
+            android:textColor="#1976D2" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -45,14 +45,25 @@
             android:inputType="textPersonName"
             android:layout_marginBottom="12dp" />
 
-        <EditText
-            android:id="@+id/editDOB"
+        <TextView
+            android:id="@+id/textDOB"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/date_of_birth_yyyy_mm_dd"
             android:textColorHint="@color/black"
             android:textColor="#FFFFFF"
-            android:inputType="date"
+            android:textSize="18sp"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/editPhoneNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:textColorHint="@color/black"
+            android:textColor="#FFFFFF"
+            android:inputType="phone"
             android:layout_marginBottom="12dp" />
 
         <TextView

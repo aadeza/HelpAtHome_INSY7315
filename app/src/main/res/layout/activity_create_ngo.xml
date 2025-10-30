@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@drawable/homebackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Logo preview -->
+        <ImageView
+            android:id="@+id/imgLogoPreview"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_launcher_background"
+            android:contentDescription="@string/logo_preview"
+            android:scaleType="centerCrop"
+            android:background="@drawable/box_background" />
+
+        <Button
+            android:id="@+id/btnSelectLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/select_logo"
+            android:layout_marginTop="8dp" />
+
+        <!-- NGO Name -->
+        <EditText
+            android:id="@+id/edtNgoName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ngo_name"
+            android:layout_marginTop="12dp" />
+
+        <!-- Category -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select NGO Category"
+            android:layout_marginTop="8dp"/>
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp" />
+
+        <!-- Date Founded -->
+        <TextView
+            android:id="@+id/txtDateFounded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/date_founded_yyyy_mm_dd"
+            android:layout_marginTop="8dp"
+            android:textSize="18sp"
+            android:padding="12dp"
+            android:background="@drawable/box_background"
+            android:drawableEnd="@android:drawable/ic_menu_my_calendar"
+            android:gravity="center_vertical"/>
+
+        <!-- Founder -->
+        <EditText
+            android:id="@+id/edtFounder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/founder_name"
+            android:layout_marginTop="8dp" />
+
+        <!-- Mission -->
+        <EditText
+            android:id="@+id/edtMission"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/mission_statement"
+            android:layout_marginTop="8dp"
+            android:inputType="textMultiLine"
+            android:minLines="3" />
+
+        <!-- Vision -->
+        <EditText
+            android:id="@+id/edtVision"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/vision_statement"
+            android:layout_marginTop="8dp"
+            android:inputType="textMultiLine"
+            android:minLines="3" />
+
+        <!-- Contacts header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact methods"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Contacts list -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvContacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="8dp" />
+
+        <!-- Add contact button -->
+        <Button
+            android:id="@+id/btnAddContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="＋ Add contact"
+            android:layout_marginTop="8dp" />
+
+        <!-- Submit button -->
+        <Button
+            android:id="@+id/btnSubmitNgo"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="@string/create_ngo"
+            android:backgroundTint="#1E88E5"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+
+        <!-- ProgressBar for uploads -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            android:indeterminate="true"
+            android:progressTint="#1E88E5" />
+
+    </LinearLayout>
+</ScrollView>
