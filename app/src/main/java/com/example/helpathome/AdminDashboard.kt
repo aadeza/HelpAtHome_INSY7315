@@ -26,6 +26,8 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -373,18 +375,22 @@ class AdminDashboard : AppCompatActivity(), AdminAccountDialog.OnAdminAccountUpd
         val moderationList = mutableListOf<MessageModerationModel>()
 
         actionsRef.get().addOnSuccessListener { actionsSnapshot ->
-            var pendingRequests = 0
+            val pendingFetches = mutableListOf<Task<DataSnapshot>>()
 
             for (ngoSnap in actionsSnapshot.children) {
                 val ngoId = ngoSnap.key ?: continue
 
                 for (userSnap in ngoSnap.children) {
                     val userId = userSnap.key ?: continue
-                    val dismissReason = userSnap.child("dismiss").getValue(String::class.java) ?: continue
+                    val dismissReason = userSnap.child("dismiss").getValue(String::class.java)
+                    val reportReason = userSnap.child("report").getValue(String::class.java)
 
-                    pendingRequests++
+                    if (dismissReason == null && reportReason == null) continue
 
-                    requestsRef.child(ngoId).child(userId).get().addOnSuccessListener { requestSnap ->
+                    val fetchTask = requestsRef.child(ngoId).child(userId).get()
+                    pendingFetches.add(fetchTask)
+
+                    fetchTask.addOnSuccessListener { requestSnap ->
                         val content = requestSnap.child("text").getValue(String::class.java) ?: "No message"
                         val userName = requestSnap.child("userName").getValue(String::class.java) ?: "Unknown"
                         val userEmail = requestSnap.child("userEmail").getValue(String::class.java) ?: ""
@@ -396,37 +402,27 @@ class AdminDashboard : AppCompatActivity(), AdminAccountDialog.OnAdminAccountUpd
                                 messageId = "$ngoId:$userId",
                                 senderId = userId,
                                 content = content,
-                                dismissed = true,
-                                reported = false,
-                                dismissReason = dismissReason,
+                                dismissed = dismissReason != null,
+                                reported = reportReason != null,
+                                dismissReason = dismissReason ?: reportReason ?: "No reason provided",
                                 userName = userName,
                                 userEmail = userEmail,
                                 userPhone = userPhone,
                                 timestamp = timestamp
                             )
                         )
-
-                        pendingRequests--
-                        if (pendingRequests == 0) {
-                            refreshModerationAdapter(moderationList)
-                        }
-                    }.addOnFailureListener {
-                        pendingRequests--
-                        if (pendingRequests == 0) {
-                            refreshModerationAdapter(moderationList)
-                        }
                     }
                 }
             }
 
-            if (pendingRequests == 0 && moderationList.isEmpty()) {
-                Toast.makeText(this, "No dismissed help requests found", Toast.LENGTH_SHORT).show()
+            Tasks.whenAllComplete(pendingFetches).addOnCompleteListener {
+                refreshModerationAdapter(moderationList)
             }
+
         }.addOnFailureListener {
             Toast.makeText(this, "Failed to load moderation actions", Toast.LENGTH_SHORT).show()
         }
     }
-
     private fun refreshModerationAdapter(moderationList: List<MessageModerationModel>) {
         if (moderationList.isEmpty()) {
             Toast.makeText(this, "No dismissed help requests found", Toast.LENGTH_SHORT).show()

@@ -74,11 +74,11 @@ class NotificationAdapter(
             if (!notification.imageUrl.isNullOrEmpty()) {
                 Glide.with(holder.itemView.context)
                     .load(notification.imageUrl)
-                    .placeholder(R.drawable.ic_placeholder_logo)
-                    .error(R.drawable.ic_placeholder_logo)
+                    .placeholder(R.drawable.helphomeicon)
+                    .error(R.drawable.helphomeicon)
                     .into(imageView)
             } else {
-                imageView.setImageResource(R.drawable.ic_placeholder_logo)
+                imageView.setImageResource(R.drawable.helphomeicon)
             }
         }
     }
