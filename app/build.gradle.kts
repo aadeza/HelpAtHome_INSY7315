@@ -18,13 +18,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(properties["KEYSTORE_PATH"] as String)
+            storePassword = properties["KEYSTORE_PASSWORD"] as String
+            keyAlias = properties["KEY_ALIAS"] as String
+            keyPassword = properties["KEY_PASSWORD"] as String
+        }
+    }
+
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -92,5 +102,4 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-
 }
